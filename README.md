@@ -1,6 +1,6 @@
 # color-palette-generator
 
-Generates a color palette from an image.
+Generates a color palette from an image using k-means clustering.
 
 [Demo](https://kuukienator.github.io/color-palette-generator/)
 
