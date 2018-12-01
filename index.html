@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Color Palette Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        canvas {
+            display: none;
+        }
+        .palette > div {
+            /* margin: 5px; */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 0.8em;
+            /* border: 2px solid; */
+            padding: 1em 0.5em;
+            flex-grow: 1;
+            line-height: 1.5;
+            text-transform: uppercase;
+        }
+
+        .palette {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            /* margin-bottom: 5px; */
+            /* flex-direction: column; */
+        }
+
+        .palettes {
+            /* min-width: 80%; */
+            display: flex;
+            flex-direction: row;
+            height: 20vh;
+            width: 100%;
+            flex-grow: 1;
+            /* background: white; */
+            /* padding: 1em; */
+        }
+
+        .controls {
+            margin: 10px;
+        }
+
+        .backgroundImage {
+            /* position: absolute; */
+            width: 100vw;
+            height: 80vh;
+            top: 0;
+            z-index: -1;
+            object-fit: cover;
+            /* filter: blur(4px) grayscale(0.75); */
+        }
+
+        .button {
+            display: inline-block;
+            border: none;
+            margin: 0;
+            text-decoration: none;
+            cursor: pointer;
+            text-align: center;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            font: inherit;
+            outline: inherit;
+
+            background: hsl(16, 100%, 50%);
+            color: white;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            padding: 0.5em;
+            min-width: 100px;
+        }
+
+        .button:hover,.button:focus {
+            background: hsl(16, 100%, 40%);
+
+        }
+
+        .loadingAnimation {
+            min-width: 50vh;
+            height: 20vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            width: 50%;
+            justify-content: center;
+        }
+
+        .is-hidden {
+            display: none;
+        }
+
+        .cube {
+            width: 25px;
+            height: 25px;
+            background: hsl(16, 100%, 50%);
+            margin: 10px;
+
+            
+        }
+
+        .cube:nth-child(even) {
+            animation: cubeUp 400ms ease-in-out 0ms infinite;
+        }
+
+         .cube:nth-child(odd) {
+            animation: cubeDown 400ms ease-in-out 0ms infinite;
+        }
+
+        @keyframes cubeUp {
+            from {
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(20px);
+            }
+
+
+            75% {
+                transform: translateY(-20px);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cubeDown {
+            from {
+                transform: translateY(0);
+            }
+
+            25% {
+                transform: translateY(-20px);
+            }
+
+
+            75% {
+                transform: translateY(20px);
+            }
+
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .palette {
+                flex-direction: column;
+                height: initial;
+            }
+
+            .palette > div {
+                width: initial;
+                height: initial;
+                padding: 5px;
+            }
+
+            .backgroundImage {
+                height: 50vh;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+    <div class="controls">
+        <label for="imageUpload" class="button">Upload</label>
+        <input type="file" id="imageUpload" name="imageUpload" accept="image/*" style="display:none">
+        <button id="randomImage" name="randomImage" class="button">Random</button>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div class="backgroundImage is-hidden"></div>
+    <div class="palettes is-hidden"></div>
+    <div class="loadingAnimation is-hidden">
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+        <div class="cube"></div>
+    </div>
+    <script src="libs/color.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
