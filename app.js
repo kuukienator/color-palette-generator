@@ -6,6 +6,22 @@ const loadingAnimation = document.querySelector('.loadingAnimation');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+const UNSPLASH_COLLECTIONS = [
+    '17098',
+];
+
+/**
+ *
+ * @param {Number} min
+ * @param {Number} max
+ * @returns {Number}
+ */
+const getRandomIntInclusive = (min, max) => {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 const appendPalettes = (clusters, palettes) => {
     const colors = document.createElement('div');
     colors.classList.add('palette');
@@ -92,7 +108,7 @@ const loadImage = source => {
 };
 
 randomImageButton.addEventListener('click', () =>
-    loadImage(`https://source.unsplash.com/featured/?nature,travel&_t=${Date.now()}`)
+    loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}&_t=${Date.now()}`)
 );
 
 imageUploadInput.addEventListener("change", (e) => {
