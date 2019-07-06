@@ -27,7 +27,7 @@
         hue = hue < 1 ? hue + 360 : hue;
 
         return hue;
-    }
+    };
 
     const rgbToHsl = color => {
         const colorRatios = color.map(c => c / 255);
@@ -43,7 +43,7 @@
         return [hue, saturation, luminance];
     };
 
-    const COLOR = {
+    window.COLOR = {
         getTextColorFromLuminance,
         intToPaddedHex,
         createHEXString,
@@ -53,6 +53,4 @@
         calculateHue,
         rgbToHsl
     };
-
-    window.COLOR = COLOR;
 })();

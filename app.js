@@ -89,13 +89,11 @@ const loadImage = source => {
     document.body.replaceChild(image, bi);
     loadingAnimation.classList.remove('is-hidden');
     palettes.classList.add('is-hidden');
-}
+};
 
-randomImageButton.addEventListener('click', () => {
-    const url =
-        `https://source.unsplash.com/featured/${window.innerWidth}x${window.innerHeight}/?nature&_t=${Date.now()}`;
-    loadImage(url);
-});
+randomImageButton.addEventListener('click', () =>
+    loadImage(`https://source.unsplash.com/featured/?nature,travel`)
+);
 
 imageUploadInput.addEventListener("change", (e) => {
     const fileList = e.target.files;

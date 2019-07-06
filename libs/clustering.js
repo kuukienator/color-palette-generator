@@ -69,7 +69,7 @@ const calculateColorRanges = pixels => pixels.reduce((acc, pixel) => {
  * @param {Array<Number>} rgbColors
  * @returns {Array<Number>} 
  */
-const caculateAverageRGBSquared = rgbColors =>
+const calculateAverageRGBSquared = rgbColors =>
     rgbColors
     .reduce(
         (averageColor, currentColor) => {
@@ -87,7 +87,7 @@ const caculateAverageRGBSquared = rgbColors =>
  * @param {Array<Number>} rgbColors
  * @returns {Array<Number>} 
  */
-const caculateAverageRGB = rgbColors =>
+const calculateAverageRGB = rgbColors =>
     rgbColors
     .reduce(
         (averageColor, currentColor) => {
@@ -146,37 +146,37 @@ const calulateRGBEuclideanDistance = (a, b) => Math.sqrt(
  * @param {Array<Number>} b
  * @returns {Number} 
  */
-const calulateBetterRGBEuclideanDistance = (a, b) => {
+const calculateBetterRGBEuclideanDistance = (a, b) => {
     const rDelta = Math.pow(b[0] - a[0], 2);
     const gDelta = Math.pow(b[1] - a[1], 2);
     const bDelta = Math.pow(b[2] - a[2], 2);
     const r = (b[0] - a[0]) / 2
     return Math.sqrt((2 * rDelta) + (4 * gDelta) + (3 * bDelta) + ((r * (rDelta - bDelta)) / 256));
-}
+};
 
 const updateClusters = (clusters, ranges, pixels) => clusters.map(cluster => ({
     points: [],
     _previousCentroid: cluster.centroid,
     percentage: Math.round((cluster.points.length / pixels.length) * 100),
     centroid: cluster.points.length > 0 ?
-        caculateAverageRGB(cluster.points) : createRandomCentroid(ranges)
+        calculateAverageRGB(cluster.points) : createRandomCentroid(ranges)
 }));
 
 
 const calculateClusters = (clusters, pixels) => {
     pixels.forEach((pixel, i) => {
         let minDistance = Number.MAX_VALUE;
-        let closesetCentroidIndex = 0;
+        let closestCentroidIndex = 0;
 
         clusters.forEach((cluster, i) => {
-            const distance = calulateBetterRGBEuclideanDistance(cluster.centroid, pixel);
+            const distance = calculateBetterRGBEuclideanDistance(cluster.centroid, pixel);
 
             if (distance < minDistance) {
                 minDistance = distance;
-                closesetCentroidIndex = i;
+                closestCentroidIndex = i;
             }
         });
-        clusters[closesetCentroidIndex].points.push(pixel);
+        clusters[closestCentroidIndex].points.push(pixel);
     });
 
     return clusters;
@@ -194,7 +194,7 @@ const calculateKMeansClustering = (pixels, k) => {
         clusters = calculateClusters(clusters, pixels);
         clusters = updateClusters(clusters, ranges, pixels);
     } while (
-        clusters.some(c => calulateBetterRGBEuclideanDistance(c.centroid, c._previousCentroid) > DISTANCE_DELTA) &&
+        clusters.some(c => calculateBetterRGBEuclideanDistance(c.centroid, c._previousCentroid) > DISTANCE_DELTA) &&
         iterations < MAX_ITERATIONS
     );
 
