@@ -92,7 +92,7 @@ const loadImage = source => {
 };
 
 randomImageButton.addEventListener('click', () =>
-    loadImage(`https://source.unsplash.com/featured/?nature,travel`)
+    loadImage(`https://source.unsplash.com/featured/?nature,travel&_t=${Date.now()}`)
 );
 
 imageUploadInput.addEventListener("change", (e) => {
