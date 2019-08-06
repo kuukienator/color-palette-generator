@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="Description" content="Generates a color palette from an image using k-means clustering.">
     <title>Color Palette Generator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link href="https://fonts.googleapis.com/css?family=Text+Me+One" rel="stylesheet">
@@ -26,6 +27,10 @@
 
         a {
             color: rgb(29, 161, 242);
+        }
+
+        h1 {
+            font-size: 1em;
         }
 
         h2 {
@@ -192,6 +197,11 @@
             height: 320px;
             padding: 15px;
             font-size: 1.2em;
+            display: none;
+        }
+
+        .showInformation .information {
+            display: block;
         }
 
         @keyframes cubeUp {
@@ -268,7 +278,7 @@
 <body>
     <div class="header">
         <div class="title">
-            Color Palette Generator
+            <h1>Color Palette Generator</h1>
         </div>
         <div class="controls">
             <label for="imageUpload" class="button">Upload</label>
@@ -290,16 +300,15 @@
     <div class="informationButtonContainer">
         <button class="showInformationButton floatingButton button">i</button>
     </div>
-    <div class="overlay">
-        <div class="information">
-            <h2>Color palette Generator</h2>
-            <p>Generates a color palette from an image using k-means clustering.</p>
-            <p>Built by Emmanuel Meinike</p>
-            <p><a href="https://twitter.com/kuukienator" target="_blank" rel="noopener" >@kuukienator</a></p>
-            <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a></p>
-            <p>&#169 2019</p>
-            <button class="floatingButton hideInformationButton button">X</button>
-        </div>
+    <div class="overlay"></div>
+    <div class="information">
+        <h2>Color palette Generator</h2>
+        <p>Generates a color palette from an image using k-means clustering.</p>
+        <p>Built by Emmanuel Meinike</p>
+        <p><a href="https://twitter.com/kuukienator" target="_blank" rel="noopener" >@kuukienator</a></p>
+        <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a></p>
+        <p>&#169 2019</p>
+        <button class="floatingButton hideInformationButton button">X</button>
     </div>
     <script src="libs/color.js"></script>
     <script src="app.js"></script>
