@@ -14,6 +14,8 @@ const UNSPLASH_COLLECTIONS = [
     '17098',
 ];
 
+const MAX_WIDTH = 800;
+
 const UNSPLASH_EXAMPLE_IMAGES = [
     'https://images.unsplash.com/photo-1563736204193-eae6c811441b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1468476396571-4d6f2a427ee7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
@@ -48,6 +50,13 @@ const UNSPLASH_EXAMPLE_IMAGES = [
     'https://images.unsplash.com/photo-1486262322291-6f4dbcd69e10?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1488462237308-ecaa28b729d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
 ];
+
+/**
+ *
+ * @param {string} imageUrl
+ * @returns {string}
+ */
+const buildOptimalImageUrl = imageUrl => imageUrl.replace(/w=\d+/, `w=${Math.min(MAX_WIDTH, window.devicePixelRatio * window.innerWidth)}`);
 
 /**
  *
@@ -148,7 +157,7 @@ const loadImage = source => {
 
 randomImageButton.addEventListener('click', () =>
     // loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}?_t=${Date.now()}`)
-    loadImage(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)])
+    loadImage(buildOptimalImageUrl(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)]))
 );
 
 urlImageButton.addEventListener('click', () => {
