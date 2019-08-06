@@ -24,6 +24,14 @@
             flex-direction: column;
         }
 
+        a {
+            color: rgb(29, 161, 242);
+        }
+
+        h2 {
+            font-size: 1.2em;
+        }
+
         canvas {
             display: none;
         }
@@ -89,6 +97,31 @@
 
         }
 
+        .floatingButton {
+            padding: 0;
+            min-width: 0;
+            text-transform: lowercase;
+            width: 50px;
+            height: 50px;
+            font-size: 2.5em;
+            font-weight: bold;
+            position: fixed;
+
+        }
+
+        .showInformationButton {
+            bottom: 50px;
+            right: 0;
+        }
+
+        .hideInformationButton {
+            top: -25px;
+            position: absolute;
+            left: 110px;
+            text-transform: uppercase;
+            font-size: 2.2em;
+        }
+
         .loadingAnimation {
             min-width: 50vh;
             height: 20vh;
@@ -109,8 +142,6 @@
             height: 25px;
             background: hsl(16, 100%, 50%);
             margin: 10px;
-
-            
         }
 
         .cube:nth-child(even) {
@@ -134,6 +165,33 @@
             font-weight: bold;
             align-items: center;
             display: flex;
+        }
+
+        .overlay {
+            visibility: hidden;
+            position: fixed;
+            background: black;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(29, 22, 20, 0.75);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .showInformation .overlay {
+            visibility: visible;
+        }
+
+        .information {
+            position: relative;
+            background: white;
+            width: 240px;
+            height: 320px;
+            padding: 15px;
+            font-size: 1.2em;
         }
 
         @keyframes cubeUp {
@@ -187,7 +245,7 @@
             }
 
             .backgroundImage {
-                height: 50vh;
+                height: 45vh;
             }
 
         }
@@ -229,8 +287,36 @@
         <div class="cube"></div>
         <div class="cube"></div>
     </div>
+    <div class="informationButtonContainer">
+        <button class="showInformationButton floatingButton button">i</button>
+    </div>
+    <div class="overlay">
+        <div class="information">
+            <h2>Color palette Generator</h2>
+            <p>Generates a color palette from an image using k-means clustering.</p>
+            <p>Built by Emmanuel Meinike</p>
+            <p><a href="https://twitter.com/kuukienator" target="_blank" rel="noopener" >@kuukienator</a></p>
+            <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a></p>
+            <p>&#169 2019</p>
+            <button class="floatingButton hideInformationButton button">X</button>
+        </div>
+    </div>
     <script src="libs/color.js"></script>
     <script src="app.js"></script>
+    <script>
+        const showInformationButton = document.querySelector('.showInformationButton');
+        const hideInformationButton = document.querySelector('.hideInformationButton');
+        const overlay = document.querySelector('.overlay');
+
+        const eventHandler = event => {
+            event.stopPropagation();
+            document.body.classList.toggle('showInformation');
+        };
+
+        showInformationButton.addEventListener('click', eventHandler);
+        hideInformationButton.addEventListener('click', eventHandler);
+        overlay.addEventListener('click', eventHandler);
+    </script>
 </body>
 
 </html>
