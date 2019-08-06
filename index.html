@@ -115,7 +115,7 @@
         }
 
         .showInformationButton {
-            bottom: 50px;
+            bottom: 20px;
             right: 0;
         }
 
@@ -191,7 +191,7 @@
         }
 
         .information {
-            position: relative;
+            position: absolute;
             background: white;
             width: 240px;
             height: 320px;
@@ -243,6 +243,11 @@
         }
 
         @media (max-width: 600px) {
+            .showInformationButton {
+                bottom: 50px;
+                right: 0;
+            }
+
             .palette {
                 flex-direction: column;
                 height: initial;
@@ -284,6 +289,7 @@
             <label for="imageUpload" class="button">Upload</label>
             <input type="file" id="imageUpload" name="imageUpload" accept="image/*" style="display:none">
             <button id="randomImage" name="randomImage" class="button">Random</button>
+<!--            <button id="urlImage" name="urlImage" class="button">Link</button>-->
         </div>
     </div>
 
@@ -303,7 +309,7 @@
     <div class="overlay"></div>
     <div class="information">
         <h2>Color palette Generator</h2>
-        <p>Generates a color palette from an image using k-means clustering.</p>
+        <p>Generates a color palette from an image using k-means clustering. Example images from <a href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a>.</p>
         <p>Built by Emmanuel Meinike</p>
         <p><a href="https://twitter.com/kuukienator" target="_blank" rel="noopener" >@kuukienator</a></p>
         <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a></p>
