@@ -37,6 +37,10 @@
             font-size: 1.2em;
         }
 
+        input {
+            font-size: 1em;
+        }
+
         canvas {
             display: none;
         }
@@ -190,18 +194,44 @@
             visibility: visible;
         }
 
-        .information {
+        .showUrlInput .overlay {
+            visibility: visible;
+        }
+
+        .informationOverlay {
             position: absolute;
             background: white;
             width: 240px;
-            height: 320px;
+            height: 340px;
             padding: 15px;
             font-size: 1.2em;
             display: none;
         }
 
-        .showInformation .information {
+        .showInformation .informationOverlay {
             display: block;
+        }
+
+        .imageUrlOverlay {
+            position: absolute;
+            background: white;
+            display: none;
+            padding: 10px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .imageUrlInputs {
+            font-size: 1.1em;
+        }
+
+        .imageUrlControls {
+            margin-top: 10px;
+        }
+
+        .showUrlInput .imageUrlOverlay {
+            display: flex;
         }
 
         @keyframes cubeUp {
@@ -243,6 +273,13 @@
         }
 
         @media (max-width: 600px) {
+            .button {
+                min-width: 80px;
+            }
+            .floatingButton {
+                min-width: 0;
+            }
+
             .showInformationButton {
                 bottom: 50px;
                 right: 0;
@@ -289,7 +326,7 @@
             <label for="imageUpload" class="button">Upload</label>
             <input type="file" id="imageUpload" name="imageUpload" accept="image/*" style="display:none">
             <button id="randomImage" name="randomImage" class="button">Random</button>
-<!--            <button id="urlImage" name="urlImage" class="button">Link</button>-->
+            <button id="urlImage" name="urlImage" class="button">Url</button>
         </div>
     </div>
 
@@ -307,7 +344,7 @@
         <button class="showInformationButton floatingButton button">i</button>
     </div>
     <div class="overlay"></div>
-    <div class="information">
+    <div class="informationOverlay">
         <h2>Color palette Generator</h2>
         <p>Generates a color palette from an image using k-means clustering. Example images from <a href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a>.</p>
         <p>Built by Emmanuel Meinike</p>
@@ -315,6 +352,16 @@
         <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a></p>
         <p>&#169 2019</p>
         <button class="floatingButton hideInformationButton button">X</button>
+    </div>
+    <div class="imageUrlOverlay">
+        <div class="imageUrlInputs">
+            <label for="imageUrlInput">Url:</label>
+            <input type="text" name="urlImageInput" id="imageUrlInput" autofocus>
+        </div>
+        <div class="imageUrlControls">
+            <button id="urlImageGo" name="urlImageGo" class="button">Load</button>
+            <button id="urlImageCancel" name="urlImageCancel" class="button">Cancel</button>
+        </div>
     </div>
     <script src="libs/color.js"></script>
     <script src="app.js"></script>
@@ -330,7 +377,10 @@
 
         showInformationButton.addEventListener('click', eventHandler);
         hideInformationButton.addEventListener('click', eventHandler);
-        overlay.addEventListener('click', eventHandler);
+        overlay.addEventListener('click', () => {
+            document.body.classList.remove('showUrlInput');
+            document.body.classList.remove('showInformation');
+        });
     </script>
 </body>
 

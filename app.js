@@ -2,6 +2,10 @@ const workers = [];
 const palettes = document.querySelector('.palettes');
 const imageUploadInput = document.getElementById('imageUpload');
 const randomImageButton = document.getElementById('randomImage');
+const urlImageButton = document.getElementById('urlImage');
+const urlImageCancelButton = document.getElementById('urlImageCancel');
+const urlImageGoButton = document.getElementById('urlImageGo');
+const urlImageInput = document.getElementById('imageUrlInput');
 const loadingAnimation = document.querySelector('.loadingAnimation');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -146,6 +150,25 @@ randomImageButton.addEventListener('click', () =>
     // loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}?_t=${Date.now()}`)
     loadImage(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)])
 );
+
+urlImageButton.addEventListener('click', () => {
+    setTimeout(() => urlImageInput.focus(), 100)
+    document.body.classList.toggle('showUrlInput');
+});
+
+urlImageCancelButton.addEventListener('click', () => {
+    document.body.classList.toggle('showUrlInput');
+    urlImageInput.value = '';
+});
+
+urlImageGoButton.addEventListener('click', () => {
+    document.body.classList.toggle('showUrlInput');
+    const url = urlImageInput.value.trim();
+    if (url.length > 0) {
+        loadImage(url);
+    }
+    urlImageInput.value = '';
+});
 
 imageUploadInput.addEventListener("change", (e) => {
     const fileList = e.target.files;
