@@ -64,10 +64,14 @@
 
         .palettes {
             display: flex;
-            flex-direction: row;
             height: 20vh;
             width: 100%;
             flex-grow: 1;
+            flex-direction: column;
+        }
+
+        .palette>div {
+            width: 20%;
         }
 
         .controls {
@@ -77,7 +81,7 @@
 
         .backgroundImage {
             width: 100vw;
-            height:74vh;
+            height: 74vh;
             top: 0;
             z-index: -1;
             object-fit: cover;
@@ -101,7 +105,8 @@
             min-width: 100px;
         }
 
-        .button:hover,.button:focus {
+        .button:hover,
+        .button:focus {
             background: hsl(16, 100%, 40%);
 
         }
@@ -289,9 +294,11 @@
             .imageUrlControls {
                 margin-top: 10px;
             }
+
             .button {
                 min-width: 80px;
             }
+
             .floatingButton {
                 min-width: 0;
             }
@@ -306,7 +313,7 @@
                 height: initial;
             }
 
-            .palette > div {
+            .palette>div {
                 width: initial;
                 height: initial;
                 padding: 5px;
@@ -318,7 +325,7 @@
 
         }
 
-         @media (max-width: 450px) {
+        @media (max-width: 450px) {
             .header {
                 flex-direction: column;
                 height: 12vh;
@@ -328,7 +335,7 @@
                 margin-bottom: 10px;
                 margin-top: 0;
             }
-            
+
         }
     </style>
 </head>
@@ -362,10 +369,12 @@
     <div class="overlay"></div>
     <div class="informationOverlay">
         <h2>Color palette Generator</h2>
-        <p>Generates a color palette from an image using k-means clustering. Example images from <a href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a>.</p>
+        <p>Generates a color palette from an image using k-means clustering. Example images from <a
+                href="https://unsplash.com/" target="_blank" rel="noopener">Unsplash</a>.</p>
         <p>Built by Emmanuel Meinike</p>
-        <p><a href="https://twitter.com/kuukienator" target="_blank" rel="noopener" >@kuukienator</a></p>
-        <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a></p>
+        <p><a href="https://twitter.com/kuukienator" target="_blank" rel="noopener">@kuukienator</a></p>
+        <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a>
+        </p>
         <p>&#169 2019</p>
         <button class="floatingButton hideInformationButton overlayCloseButton button">X</button>
     </div>
@@ -377,7 +386,8 @@
         <div class="imageUrlControls">
             <button id="urlImageGo" name="urlImageGo" class="button">Load</button>
         </div>
-        <button class="floatingButton hideImageUrlOverlayButton overlayCloseButton button" id="urlImageCancel" name="urlImageCancel">X</button>
+        <button class="floatingButton hideImageUrlOverlayButton overlayCloseButton button" id="urlImageCancel"
+            name="urlImageCancel">X</button>
     </div>
     <script src="libs/color.js"></script>
     <script src="app.js"></script>

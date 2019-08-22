@@ -182,9 +182,22 @@ const calculateClusters = (clusters, pixels) => {
     return clusters;
 };
 
-const calculateKMeansClustering = (pixels, k) => {
-    const MAX_ITERATIONS = 50;
+const filterPixels = (pixels, filterOptions) => {
+    const filteredPixels = [];
+    for (let i = 0; i < pixels.length; i++) {
+        const [hue, saturation, lightness] = COLOR.rgbToHsl(pixels[i]);
+        if (saturation > filterOptions.saturation && lightness > filterOptions.lightness) {
+            filteredPixels.push(pixels[i]);
+        }
+    }
+
+    return filteredPixels;
+};
+
+const calculateKMeansClustering = (rawPixels, k, filterOptions) => {
+    const MAX_ITERATIONS = 20;
     const DISTANCE_DELTA = 0.2;
+    const pixels = filterPixels(rawPixels, filterOptions);
     const ranges = calculateColorRanges(pixels);
     let clusters = createInitialClusters(pixels, k, ranges);
 

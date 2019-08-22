@@ -1,4 +1,4 @@
-(() => {
+const COLOR = (() => {
     const getTextColorFromLuminance = luminance => (luminance > 0.5 ? '#000' : '#fff');
     const intToPaddedHex = n => {
         const hex = n.toString(16);
@@ -29,6 +29,11 @@
         return hue;
     };
 
+    /**
+     *
+     * @param color
+     * @returns {[number, number, number]}
+     */
     const rgbToHsl = color => {
         const colorRatios = color.map(c => c / 255);
         const min = Math.min(...colorRatios);
@@ -43,7 +48,7 @@
         return [hue, saturation, luminance];
     };
 
-    window.COLOR = {
+    const COLOR = {
         getTextColorFromLuminance,
         intToPaddedHex,
         createHEXString,
@@ -53,4 +58,10 @@
         calculateHue,
         rgbToHsl
     };
+
+    if (typeof window !== 'undefined') {
+        window.COLOR = COLOR;
+    }
+
+    return COLOR;
 })();

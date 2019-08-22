@@ -95,14 +95,7 @@ const appendPalettes = (clusters, palettes) => {
     palettes.appendChild(colors);
 };
 
-const imageLoadCallback = (image, canvas, ctx) => {
-    const width = image.naturalWidth;
-    const height = image.naturalHeight;
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(image, 0, 0);
-
-    const imageData = ctx.getImageData(0, 0, width, height);
+const startWorker = (imageData, width, filterOptions) => {
     const worker = new Worker('worker.js');
     workers.push(worker);
     worker.addEventListener(
@@ -115,7 +108,8 @@ const imageLoadCallback = (image, canvas, ctx) => {
                         worker.postMessage({
                             type: 'GENERATE_CLUSTERS',
                             pixels,
-                            k: 5
+                            k: 5,
+                            filterOptions
                         });
                     }
                     break;
@@ -135,7 +129,18 @@ const imageLoadCallback = (image, canvas, ctx) => {
         imageData,
         width
     });
+};
 
+const imageLoadCallback = (image, canvas, ctx) => {
+    const width = image.naturalWidth;
+    const height = image.naturalHeight;
+    canvas.width = width;
+    canvas.height = height;
+    ctx.drawImage(image, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, width, height);
+    // startWorker(imageData, width, {saturation: 0.1, lightness: 0.15});
+    startWorker(imageData, width, {saturation: 0.15, lightness: 0.2});
 };
 
 const loadImage = source => {

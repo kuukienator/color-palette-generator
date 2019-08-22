@@ -1,4 +1,6 @@
 importScripts('libs/clustering.js');
+importScripts('libs/color.js');
+
 let pixels = null;
 
 self.addEventListener('message', e => {
@@ -11,7 +13,7 @@ self.addEventListener('message', e => {
             });
             break;
         case 'GENERATE_CLUSTERS':
-            const clusters = calculateKMeansClustering(e.data.pixels || pixels, e.data.k);
+            const clusters = calculateKMeansClustering(e.data.pixels || pixels, e.data.k, e.data.filterOptions);
             this.self.postMessage({
                 type: 'GENERATE_CLUSTERS',
                 clusters
