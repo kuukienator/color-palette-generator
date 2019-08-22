@@ -5,6 +5,8 @@ const randomImageButton = document.getElementById('randomImage');
 const urlImageButton = document.getElementById('urlImage');
 const urlImageCancelButton = document.getElementById('urlImageCancel');
 const urlImageGoButton = document.getElementById('urlImageGo');
+const urlImageForm = document.getElementById('urlImageForm');
+const vibrantModeCheckbox = document.getElementById('vibrantMode');
 const urlImageInput = document.getElementById('imageUrlInput');
 const loadingAnimation = document.querySelector('.loadingAnimation');
 const canvas = document.getElementById('canvas');
@@ -14,7 +16,7 @@ const UNSPLASH_COLLECTIONS = [
     '17098',
 ];
 
-const MAX_WIDTH = 800;
+const MAX_WIDTH = 1200;
 
 const UNSPLASH_EXAMPLE_IMAGES = [
     'https://images.unsplash.com/photo-1563736204193-eae6c811441b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
@@ -138,9 +140,12 @@ const imageLoadCallback = (image, canvas, ctx) => {
     canvas.height = height;
     ctx.drawImage(image, 0, 0);
 
+    const isVibrantMode = vibrantModeCheckbox.checked;
+
     const imageData = ctx.getImageData(0, 0, width, height);
+    const filterOptions = isVibrantMode ? {saturation: 0.25, lightness: 0.2} : {saturation: 0.15, lightness: 0.2};
     // startWorker(imageData, width, {saturation: 0.1, lightness: 0.15});
-    startWorker(imageData, width, {saturation: 0.15, lightness: 0.2});
+    startWorker(imageData, width, filterOptions);
 };
 
 const loadImage = source => {
@@ -166,7 +171,7 @@ randomImageButton.addEventListener('click', () =>
 );
 
 urlImageButton.addEventListener('click', () => {
-    setTimeout(() => urlImageInput.focus(), 100)
+    setTimeout(() => urlImageInput.focus(), 100);
     document.body.classList.toggle('showUrlInput');
 });
 
@@ -175,7 +180,9 @@ urlImageCancelButton.addEventListener('click', () => {
     urlImageInput.value = '';
 });
 
-urlImageGoButton.addEventListener('click', () => {
+urlImageForm.addEventListener('submit', e => {
+    e.preventDefault();
+    e.stopPropagation();
     document.body.classList.toggle('showUrlInput');
     const url = urlImageInput.value.trim();
     if (url.length > 0) {

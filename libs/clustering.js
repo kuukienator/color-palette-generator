@@ -195,7 +195,7 @@ const filterPixels = (pixels, filterOptions) => {
 };
 
 const calculateKMeansClustering = (rawPixels, k, filterOptions) => {
-    const MAX_ITERATIONS = 20;
+    const MAX_ITERATIONS = 15;
     const DISTANCE_DELTA = 0.2;
     const pixels = filterPixels(rawPixels, filterOptions);
     const ranges = calculateColorRanges(pixels);

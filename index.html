@@ -67,7 +67,7 @@
             height: 20vh;
             width: 100%;
             flex-grow: 1;
-            flex-direction: column;
+            flex-direction: row;
         }
 
         .palette>div {
@@ -108,7 +108,6 @@
         .button:hover,
         .button:focus {
             background: hsl(16, 100%, 40%);
-
         }
 
         .floatingButton {
@@ -211,7 +210,7 @@
             position: absolute;
             background: white;
             width: 240px;
-            height: 340px;
+            height: 380px;
             padding: 15px;
             font-size: 1.2em;
             display: none;
@@ -242,10 +241,33 @@
 
         .imageUrlControls {
             margin-left: 10px;
+            align-items: center;
+            display: flex;
+            justify-content: center;
         }
 
         .showUrlInput .imageUrlOverlay {
             display: flex;
+        }
+
+        input[type="checkbox"] {
+            display:none;
+        }
+
+        input[type="checkbox"] + label::before {
+            width: 1em;
+            height: 1em;
+            background-color: #fff;
+            display: block;
+            content: "";
+            float: left;
+            margin-right: 5px;
+            border: 2px solid hsl(16, 100%, 50%);
+        }
+
+        input[type="checkbox"]:checked+label::before {
+            box-shadow: inset 0px 0px 0px 3px #fff;
+            background-color: hsl(16, 100%, 50%);
         }
 
         @keyframes cubeUp {
@@ -376,16 +398,20 @@
         <p><a href="https://github.com/kuukienator/color-palette-generator" target="_blank" rel="noopener">Source</a>
         </p>
         <p>&#169 2019</p>
+        <input type="checkbox" name="vibrantMode" id="vibrantMode">
+        <label for="vibrantMode">Give me Vibrant colors</label>
         <button class="floatingButton hideInformationButton overlayCloseButton button">X</button>
     </div>
     <div class="imageUrlOverlay">
-        <div class="imageUrlInputs">
-            <label for="imageUrlInput">Url:</label>
-            <input type="text" name="urlImageInput" id="imageUrlInput" autofocus>
-        </div>
-        <div class="imageUrlControls">
-            <button id="urlImageGo" name="urlImageGo" class="button">Load</button>
-        </div>
+        <form id="urlImageForm">
+            <div class="imageUrlInputs">
+                <label for="imageUrlInput">Url:</label>
+                <input type="text" name="urlImageInput" id="imageUrlInput" autofocus>
+            </div>
+            <div class="imageUrlControls">
+                <button id="urlImageGo" name="urlImageGo" class="button" type="submit">Load</button>
+            </div>
+        </form>
         <button class="floatingButton hideImageUrlOverlayButton overlayCloseButton button" id="urlImageCancel"
             name="urlImageCancel">X</button>
     </div>
