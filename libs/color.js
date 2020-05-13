@@ -10,6 +10,8 @@ const COLOR = (() => {
     const createHSLString = ([hue, saturation, luminance]) =>
         `hsl(${Math.round(hue)}, ${Math.round(saturation * 100)}%, ${Math.round(luminance * 100)}%)`;
 
+    const hexToRgb = color => [color.substr(0,2), color.substr(2,2), color.substr(4,2)].map(e => parseInt(e, 16));
+    
     const rgbToHex = color => color.map(c => intToPaddedHex(c));
 
     const calculateHue = (colorRatios, indexOfMax, max, min) => {
@@ -56,7 +58,8 @@ const COLOR = (() => {
         createHSLString,
         rgbToHex,
         calculateHue,
-        rgbToHsl
+        rgbToHsl,
+        hexToRgb,
     };
 
     if (typeof window !== 'undefined') {

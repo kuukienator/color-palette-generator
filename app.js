@@ -72,6 +72,8 @@ const getRandomIntInclusive = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+const createClusterFromHexColors = (hexColors) => hexColors.map(h => ({color: window.COLOR.hexToRgb(h)}));
+
 const appendPalettes = (clusters, palettes) => {
     const colors = document.createElement('div');
     colors.classList.add('palette');
@@ -97,7 +99,7 @@ const appendPalettes = (clusters, palettes) => {
     palettes.appendChild(colors);
 };
 
-const startWorker = (imageData, width, filterOptions) => {
+const startWorker = (imageUrl, imageData, width, filterOptions) => {
     const worker = new Worker('worker.js');
     workers.push(worker);
     worker.addEventListener(
@@ -120,6 +122,7 @@ const startWorker = (imageData, width, filterOptions) => {
                     loadingAnimation.classList.add('is-hidden');
                     palettes.classList.remove('is-hidden');
                     appendPalettes(clusters, palettes);
+                    addToHistory(clusters.map(cl => window.COLOR.rgbToHex(cl.color).join('')), imageUrl);
                     break;
             }
         },
@@ -145,7 +148,7 @@ const imageLoadCallback = (image, canvas, ctx) => {
     const imageData = ctx.getImageData(0, 0, width, height);
     const filterOptions = isVibrantMode ? {saturation: 0.25, lightness: 0.2} : {saturation: 0.15, lightness: 0.2};
     // startWorker(imageData, width, {saturation: 0.1, lightness: 0.15});
-    startWorker(imageData, width, filterOptions);
+    startWorker(image.src, imageData, width, filterOptions);
 };
 
 const loadImage = source => {
@@ -164,6 +167,94 @@ const loadImage = source => {
     loadingAnimation.classList.remove('is-hidden');
     palettes.classList.add('is-hidden');
 };
+
+const loadViewMode = (source, colors) => {
+    palettes.innerHTML = '';
+    workers.forEach(w => w.terminate());
+
+    const image = new Image();
+    image.crossOrigin = 'Anonymous';
+    image.src = source;
+
+    image.classList.add('backgroundImage');
+    appendPalettes(createClusterFromHexColors(colors), palettes);
+
+    const bi = document.querySelector('.backgroundImage');
+    document.body.replaceChild(image, bi);
+    loadingAnimation.classList.add('is-hidden');
+    palettes.classList.remove('is-hidden');
+}
+
+const loadColorsMode = (colors) => {
+    palettes.innerHTML = '';
+    workers.forEach(w => w.terminate());
+    const bi = document.querySelector('.backgroundImage');
+    bi.classList.add('is-hidden');
+    appendPalettes(createClusterFromHexColors(colors), palettes);
+    loadingAnimation.classList.add('is-hidden');
+    palettes.classList.remove('is-hidden');
+}
+
+const createUrlQueryString = (colors, imageUrl) => {
+    const queries = [];
+    if (colors) {
+        queries.push(`colors=${colors.join('-')}`);
+    }
+
+    if(imageUrl) {
+        queries.push(`imageUrl=${encodeURIComponent(imageUrl)}`);
+    }
+
+    return `?${queries.join('&')}`;
+};
+
+const addToHistory = (colors, imageUrl) => {
+    const state = {};
+    if (colors) {
+        state.colors = colors;
+    }
+
+    if(imageUrl) {
+        state.imageUrl = imageUrl;
+    }
+    window.history.pushState(state, '', createUrlQueryString(colors, imageUrl));
+}
+
+const updateHistory = (colors, imageUrl) => {
+    const state = {};
+    if (colors) {
+        state.colors = colors;
+    }
+
+    if(imageUrl) {
+        state.imageUrl = imageUrl;
+    }
+    window.history.replaceState(state, '', createUrlQueryString(colors, imageUrl));
+}
+
+const getUrlParameters = () => {
+    const searchList = window.location.search.substr(1).split('&');
+    return searchList.reduce((acc, cv) => {
+        const splitEntry = cv.split('=');
+        const e = {};
+        e[splitEntry[0]] = splitEntry[1];
+        return Object.assign({}, acc, e);
+    }, {});
+}
+
+const initFromUrl = () => {
+    const parameters = getUrlParameters();
+    if(parameters.colors && parameters.imageUrl) {
+        const colors = parameters.colors.split('-');
+        const imageUrl = decodeURIComponent(parameters.imageUrl);
+        loadViewMode(imageUrl, colors);
+        updateHistory(colors, imageUrl);
+    } else if (parameters.colors) {
+        const colors = parameters.colors.split('-');
+        loadColorsMode(colors);
+        updateHistory(colors);
+    }
+}
 
 randomImageButton.addEventListener('click', () =>
     // loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}?_t=${Date.now()}`)
@@ -199,3 +290,13 @@ imageUploadInput.addEventListener("change", (e) => {
         reader.readAsDataURL(fileList[0]);
     }
 }, false);
+
+window.onpopstate = (event) => {
+    if (event.state && event.state.colors && event.state.imageUrl) {
+        loadViewMode(event.state.imageUrl, event.state.colors);
+    } else if (event.state.colors) {
+        loadColorsMode(event.state.colors);
+    }
+};
+
+initFromUrl();
