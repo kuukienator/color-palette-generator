@@ -97,9 +97,12 @@ const getRandomIntInclusive = (min, max) => {
 
 const createClusterFromHexColors = (hexColors) => hexColors.map(h => ({color: window.COLOR.hexToRgb(h)}));
 
-const appendPalettes = (clusters, palettes, hideText = false) => {
+const appendPalettes = (clusters, palettes, options) => {
     const colors = document.createElement('div');
     colors.classList.add('palette');
+    if (options && options.paletteOnClick) {
+        colors.addEventListener('click', e => options.paletteOnClick());
+    }
 
     clusters.forEach(cluster => {
         const color = cluster.color;
@@ -107,6 +110,9 @@ const appendPalettes = (clusters, palettes, hideText = false) => {
         const hexColor = window.COLOR.rgbToHex(color);
 
         const cd = document.createElement('div');
+        if (options && options.colorOnClick) {
+            cd.addEventListener('click', e => options.colorOnClick(window.COLOR.createHEXString(hexColor)));
+        }
         cd.style.backgroundColor = window.COLOR.createRGBString(color);
         cd.style.color = window.COLOR.getTextColorFromLuminance(hslColor[2]);
         // cd.style.height = cluster.percentage + '%';
@@ -115,14 +121,27 @@ const appendPalettes = (clusters, palettes, hideText = false) => {
         cd.setAttribute('data-hex', window.COLOR.createHEXString(hexColor));
         cd.setAttribute('data-hsl', window.COLOR.createHSLString(hslColor));
 
-        // if (!hideText) {
-            cd.innerHTML = `<span>${window.COLOR.createHEXString(hexColor)}</span>`;
-        // }
+        cd.innerHTML = `<span>${window.COLOR.createHEXString(hexColor)}</span>`;
         colors.appendChild(cd);
     });
 
     palettes.appendChild(colors);
 };
+
+const copyTextToClipboard = text => {
+    if (!navigator.clipboard) {
+        createNotification('¯\_(ツ)_/¯ No fallback copy yet');
+        return Promise.resolve();
+    } else {
+        return navigator.clipboard.writeText(text);
+    }
+}
+
+const copyColorClickHandler = color => {
+    copyTextToClipboard(color)
+        .then(() => createNotification(`Copied ${color} to clipboard`))
+        .catch(() => createNotification(`Failed to copy... :(`));
+}
 
 const startWorker = (imageUrl, imageData, width, filterOptions) => {
     const worker = new Worker('worker.js');
@@ -146,7 +165,7 @@ const startWorker = (imageUrl, imageData, width, filterOptions) => {
                     const clusters = e.data.clusters;
                     loadingAnimation.classList.add('is-hidden');
                     palettes.classList.remove('is-hidden');
-                    appendPalettes(clusters, palettes);
+                    appendPalettes(clusters, palettes, { colorOnClick: copyColorClickHandler });
                     addToHistory(clusters.map(cl => window.COLOR.rgbToHex(cl.color).join('')), imageUrl);
                     showSaveButton();
                     break;
@@ -204,7 +223,7 @@ const loadViewMode = (source, colors) => {
     image.src = source;
 
     image.classList.add('backgroundImage');
-    appendPalettes(createClusterFromHexColors(colors), palettes);
+    appendPalettes(createClusterFromHexColors(colors), palettes, { colorOnClick: copyColorClickHandler});
 
     const bi = document.querySelector('.backgroundImage');
     document.body.replaceChild(image, bi);
@@ -218,7 +237,7 @@ const loadColorsMode = (colors) => {
     workers.forEach(w => w.terminate());
     const bi = document.querySelector('.backgroundImage');
     bi.classList.add('is-hidden');
-    appendPalettes(createClusterFromHexColors(colors), palettes);
+    appendPalettes(createClusterFromHexColors(colors), palettes, { colorOnClick: copyColorClickHandler });
     loadingAnimation.classList.add('is-hidden');
     palettes.classList.remove('is-hidden');
     showSaveButton();
