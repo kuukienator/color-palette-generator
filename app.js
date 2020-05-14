@@ -12,6 +12,25 @@ const loadingAnimation = document.querySelector('.loadingAnimation');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+const saveButton = document.querySelector('.saveButton');
+const savedButton = document.getElementById('saved');
+
+const showSaveButton = () => {
+    const currentState = window.history.state;
+    if (!isColorPaletteAlreadySaved(currentState.colors, getSavedColorPalettes())) {
+        saveButton.classList.remove('slideOut');
+    }
+
+    // TODO:  maybe show are remove from saved button
+}
+
+const hideSaveButton = () => {
+    saveButton.classList.add('slideOut');
+}
+
+const notificationsContainer = document.querySelector('.notificationsContainer');
+
+const SAVED_PALETTES_KEY = 'SAVED_COLOR_PALETTES';
 const UNSPLASH_COLLECTIONS = [
     '17098',
 ];
@@ -123,6 +142,7 @@ const startWorker = (imageUrl, imageData, width, filterOptions) => {
                     palettes.classList.remove('is-hidden');
                     appendPalettes(clusters, palettes);
                     addToHistory(clusters.map(cl => window.COLOR.rgbToHex(cl.color).join('')), imageUrl);
+                    showSaveButton();
                     break;
             }
         },
@@ -152,6 +172,7 @@ const imageLoadCallback = (image, canvas, ctx) => {
 };
 
 const loadImage = source => {
+    hideSaveButton();
     palettes.innerHTML = '';
     workers.forEach(w => w.terminate());
 
@@ -183,6 +204,7 @@ const loadViewMode = (source, colors) => {
     document.body.replaceChild(image, bi);
     loadingAnimation.classList.add('is-hidden');
     palettes.classList.remove('is-hidden');
+    showSaveButton();
 }
 
 const loadColorsMode = (colors) => {
@@ -193,6 +215,7 @@ const loadColorsMode = (colors) => {
     appendPalettes(createClusterFromHexColors(colors), palettes);
     loadingAnimation.classList.add('is-hidden');
     palettes.classList.remove('is-hidden');
+    showSaveButton();
 }
 
 const createUrlQueryString = (colors, imageUrl) => {
@@ -247,13 +270,61 @@ const initFromUrl = () => {
     if(parameters.colors && parameters.imageUrl) {
         const colors = parameters.colors.split('-');
         const imageUrl = decodeURIComponent(parameters.imageUrl);
-        loadViewMode(imageUrl, colors);
         updateHistory(colors, imageUrl);
+        loadViewMode(imageUrl, colors);
     } else if (parameters.colors) {
         const colors = parameters.colors.split('-');
-        loadColorsMode(colors);
         updateHistory(colors);
+        loadColorsMode(colors);
     }
+}
+
+// Storage
+
+const getSavedColorPalettes = () => {
+    const savedColorPalettes = window.localStorage.getItem(SAVED_PALETTES_KEY);
+    if (!savedColorPalettes) {
+        return [];
+    }
+
+    try {
+        return JSON.parse(savedColorPalettes);
+    } catch(e) {
+        return [];
+    }
+}
+
+const areColorsIdentical = (c1, c2) => c1.sort().join('-') === c2.sort().join('-');
+
+const isColorPaletteAlreadySaved = (colors, savedColorPalettes) => {
+    if (!colors) {
+        return false;
+    }
+
+    return !!savedColorPalettes.find(cp => areColorsIdentical(cp.colors, colors));
+}
+
+const saveColorPalette = (state) => {
+    const savedColorPalettes = getSavedColorPalettes();
+    if (!isColorPaletteAlreadySaved(state.colors, savedColorPalettes)) {
+        savedColorPalettes.push(state);
+        window.localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(savedColorPalettes));
+        createNotification('Color palette saved', 2000);
+    }
+}
+
+// Notifications
+const createNotification = (message, timeout = 2500) => {
+    const NOTIFICATION_CLASSNAME = 'notification';
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.classList.add(NOTIFICATION_CLASSNAME);
+    setTimeout(() => {
+        console.log('removing notification');
+        notification.remove();
+    }, timeout);
+
+    notificationsContainer.appendChild(notification);
 }
 
 randomImageButton.addEventListener('click', () =>
@@ -282,7 +353,7 @@ urlImageForm.addEventListener('submit', e => {
     urlImageInput.value = '';
 });
 
-imageUploadInput.addEventListener("change", (e) => {
+imageUploadInput.addEventListener('chnage', (e) => {
     const fileList = e.target.files;
     if (fileList.length > 0) {
         const reader = new FileReader();
@@ -290,6 +361,14 @@ imageUploadInput.addEventListener("change", (e) => {
         reader.readAsDataURL(fileList[0]);
     }
 }, false);
+
+saveButton.addEventListener('click', () => {
+    const currentColorPalette = window.history.state;
+    if (currentColorPalette && currentColorPalette.colors) {
+        saveColorPalette(currentColorPalette);
+        hideSaveButton();
+    }
+})
 
 window.onpopstate = (event) => {
     if (event.state && event.state.colors && event.state.imageUrl) {
