@@ -13,7 +13,11 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 const saveButton = document.querySelector('.saveButton');
-const savedButton = document.getElementById('saved');
+
+const savedColorPalettes = document.querySelector('.savedColorPalettes');
+const savedPalettesOverlay = document.querySelector('.savedPalettesOverlay');
+const showSavedPalettesButton = document.getElementById('showSavedPalettes');
+const closedSavedPalettesButton = document.getElementById('closedSavedPalettes');
 
 const showSaveButton = () => {
     const currentState = window.history.state;
@@ -93,7 +97,7 @@ const getRandomIntInclusive = (min, max) => {
 
 const createClusterFromHexColors = (hexColors) => hexColors.map(h => ({color: window.COLOR.hexToRgb(h)}));
 
-const appendPalettes = (clusters, palettes) => {
+const appendPalettes = (clusters, palettes, hideText = false) => {
     const colors = document.createElement('div');
     colors.classList.add('palette');
 
@@ -111,7 +115,9 @@ const appendPalettes = (clusters, palettes) => {
         cd.setAttribute('data-hex', window.COLOR.createHEXString(hexColor));
         cd.setAttribute('data-hsl', window.COLOR.createHSLString(hslColor));
 
-        cd.innerText = window.COLOR.createHEXString(hexColor);
+        // if (!hideText) {
+            cd.innerHTML = `<span>${window.COLOR.createHEXString(hexColor)}</span>`;
+        // }
         colors.appendChild(cd);
     });
 
@@ -309,7 +315,7 @@ const saveColorPalette = (state) => {
     if (!isColorPaletteAlreadySaved(state.colors, savedColorPalettes)) {
         savedColorPalettes.push(state);
         window.localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(savedColorPalettes));
-        createNotification('Color palette saved', 2000);
+        createNotification('Color palette saved', 1500);
     }
 }
 
@@ -325,6 +331,21 @@ const createNotification = (message, timeout = 2500) => {
     }, timeout);
 
     notificationsContainer.appendChild(notification);
+}
+
+// Saved palettes
+
+const showSavedPalettes = () => {
+    const savedPalettes = getSavedColorPalettes();
+    savedColorPalettes.textContent = '';
+    if (savedPalettes.length === 0) {
+        savedColorPalettes.innerHTML = 'You have not saved any palettes yet.<br/> Use the <b>+</b> button to add while browsing.';
+    } else {
+        savedPalettes.forEach(sp => {
+            appendPalettes(createClusterFromHexColors(sp.colors), savedColorPalettes, true);
+        });
+    }
+   
 }
 
 randomImageButton.addEventListener('click', () =>
@@ -368,7 +389,13 @@ saveButton.addEventListener('click', () => {
         saveColorPalette(currentColorPalette);
         hideSaveButton();
     }
-})
+});
+
+showSavedPalettesButton.addEventListener('click', () => {
+    showSavedPalettes();
+    savedPalettesOverlay.classList.remove('is-hidden');
+});
+closedSavedPalettesButton.addEventListener('click', () => savedPalettesOverlay.classList.add('is-hidden'));
 
 window.onpopstate = (event) => {
     if (event.state && event.state.colors && event.state.imageUrl) {

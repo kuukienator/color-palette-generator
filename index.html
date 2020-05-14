@@ -161,10 +161,6 @@
             justify-content: center;
         }
 
-        .is-hidden {
-            display: none;
-        }
-
         .cube {
             width: 25px;
             height: 25px;
@@ -396,6 +392,63 @@
             text-align: center;
             font-weight: bold;
         }
+
+        .savedPalettesOverlay {
+            position: fixed;
+            background: white;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .savedPalettesControls {
+            margin: 1em;
+            margin-bottom: 2em;
+        }
+
+        .savedColorPalettes {
+            margin-bottom: 1em;
+            padding: 0 1em;
+            height: 100%;
+            font-size: 1.2em;
+            max-width: 800px;
+            width: 90%;
+        }
+
+        .savedColorPalettes > .palette {
+            flex-direction: row;
+            font-size: 1em;
+            /* border: 3px solid hsl(16, 100%, 50%); */
+            margin-bottom: 0.5em;
+            height: 60px;
+            box-sizing: border-box;
+        }
+
+        .savedColorPalettes > .palette > div {
+            /* width: 50px; */
+            /* height: 50px; */
+            padding: 0;
+        }
+
+        .savedColorPalettes > .palette > div > span {
+           display: none;
+           font-size: 0.8em;
+        }
+
+        @media (min-width: 600px) {
+            .savedColorPalettes > .palette > div > span {
+                display: initial;
+            }
+        }
+
+        .is-hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -409,7 +462,7 @@
             <input type="file" id="imageUpload" name="imageUpload" accept="image/*" style="display:none">
             <button id="randomImage" name="randomImage" class="button">Random</button>
             <button id="urlImage" name="urlImage" class="button">Url</button>
-            <button id="saved" name="urlImage" class="button">Saved</button>
+            <button id="showSavedPalettes" name="showSavedPalettes" class="button">Saved</button>
         </div>
     </div>
 
@@ -455,8 +508,13 @@
             name="urlImageCancel">X</button>
     </div>
 
-    <div class="notificationsContainer">
-
+    <div class="notificationsContainer"></div>
+    <div class="savedPalettesOverlay is-hidden">
+        <h2>Saved color palettes</h2>
+        <div class="savedColorPalettes"></div>
+        <div class="savedPalettesControls">
+            <button id="closedSavedPalettes" name="closedSavedPalettes" class="button">Close</button>
+        </div>
     </div>
     <script src="libs/color.js"></script>
     <script src="app.js"></script>
