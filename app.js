@@ -36,6 +36,14 @@ const hideSaveButton = () => {
     saveButton.classList.add('slideOut');
 }
 
+const showSavedPalettes = () => {
+    showSavedPalettesView();
+    savedPalettesOverlay.classList.remove('is-hidden');
+}
+
+const hideSavedPalettes = () => {
+    savedPalettesOverlay.classList.add('is-hidden');
+}
 
 const UNSPLASH_COLLECTIONS = [
     '17098',
@@ -102,8 +110,10 @@ const createClusterFromHexColors = (hexColors) => hexColors.map(h => ({color: wi
 const appendPalettes = (clusters, palettes, options) => {
     const colors = document.createElement('div');
     colors.classList.add('palette');
+
     if (options && options.paletteOnClick) {
-        colors.addEventListener('click', e => options.paletteOnClick());
+        const colorsUrlQuery = clusters.map(c => window.COLOR.rgbToHex(c.color).join(''));
+        colors.addEventListener('click', e => options.paletteOnClick({colors: colorsUrlQuery }));
     }
 
     clusters.forEach(cluster => {
@@ -247,17 +257,20 @@ const loadColorsMode = (colors) => {
 
 // Saved palettes
 
-const showSavedPalettes = () => {
+const showSavedPalettesView = () => {
     const savedPalettes = getSavedColorPalettes();
     savedColorPalettes.textContent = '';
     if (savedPalettes.length === 0) {
         savedColorPalettes.innerHTML = 'You have not saved any palettes yet.<br/> Use the <b>+</b> button to add while browsing.';
     } else {
-        savedPalettes.forEach(sp => {
-            appendPalettes(createClusterFromHexColors(sp.colors), savedColorPalettes, true);
-        });
+        const paletteOnClick = e => {
+            console.log(e.colors);
+            loadColorsMode(e.colors);
+            addToHistory(e.colors);
+            hideSavedPalettes();
+        }
+        savedPalettes.forEach(sp => appendPalettes(createClusterFromHexColors(sp.colors), savedColorPalettes, { paletteOnClick }));
     }
-   
 }
 
 randomImageButton.addEventListener('click', () =>
@@ -303,11 +316,8 @@ saveButton.addEventListener('click', () => {
     }
 });
 
-showSavedPalettesButton.addEventListener('click', () => {
-    showSavedPalettes();
-    savedPalettesOverlay.classList.remove('is-hidden');
-});
-closedSavedPalettesButton.addEventListener('click', () => savedPalettesOverlay.classList.add('is-hidden'));
+showSavedPalettesButton.addEventListener('click', showSavedPalettes);
+closedSavedPalettesButton.addEventListener('click', hideSavedPalettes);
 
 window.onpopstate = (event) => {
     if (event.state && event.state.colors && event.state.imageUrl) {
