@@ -1,3 +1,7 @@
+import { createNotification } from './libs/notifications.js';
+import { getSavedColorPalettes, isColorPaletteAlreadySaved, saveColorPalette } from './libs/storage.js';
+import { initFromUrl, addToHistory } from './libs/history.js';
+
 const workers = [];
 const palettes = document.querySelector('.palettes');
 const imageUploadInput = document.getElementById('imageUpload');
@@ -32,9 +36,7 @@ const hideSaveButton = () => {
     saveButton.classList.add('slideOut');
 }
 
-const notificationsContainer = document.querySelector('.notificationsContainer');
 
-const SAVED_PALETTES_KEY = 'SAVED_COLOR_PALETTES';
 const UNSPLASH_COLLECTIONS = [
     '17098',
 ];
@@ -243,115 +245,6 @@ const loadColorsMode = (colors) => {
     showSaveButton();
 }
 
-const createUrlQueryString = (colors, imageUrl) => {
-    const queries = [];
-    if (colors) {
-        queries.push(`colors=${colors.join('-')}`);
-    }
-
-    if(imageUrl) {
-        queries.push(`imageUrl=${encodeURIComponent(imageUrl)}`);
-    }
-
-    return `?${queries.join('&')}`;
-};
-
-const addToHistory = (colors, imageUrl) => {
-    const state = {};
-    if (colors) {
-        state.colors = colors;
-    }
-
-    if(imageUrl) {
-        state.imageUrl = imageUrl;
-    }
-    window.history.pushState(state, '', createUrlQueryString(colors, imageUrl));
-}
-
-const updateHistory = (colors, imageUrl) => {
-    const state = {};
-    if (colors) {
-        state.colors = colors;
-    }
-
-    if(imageUrl) {
-        state.imageUrl = imageUrl;
-    }
-    window.history.replaceState(state, '', createUrlQueryString(colors, imageUrl));
-}
-
-const getUrlParameters = () => {
-    const searchList = window.location.search.substr(1).split('&');
-    return searchList.reduce((acc, cv) => {
-        const splitEntry = cv.split('=');
-        const e = {};
-        e[splitEntry[0]] = splitEntry[1];
-        return Object.assign({}, acc, e);
-    }, {});
-}
-
-const initFromUrl = () => {
-    const parameters = getUrlParameters();
-    if(parameters.colors && parameters.imageUrl) {
-        const colors = parameters.colors.split('-');
-        const imageUrl = decodeURIComponent(parameters.imageUrl);
-        updateHistory(colors, imageUrl);
-        loadViewMode(imageUrl, colors);
-    } else if (parameters.colors) {
-        const colors = parameters.colors.split('-');
-        updateHistory(colors);
-        loadColorsMode(colors);
-    }
-}
-
-// Storage
-
-const getSavedColorPalettes = () => {
-    const savedColorPalettes = window.localStorage.getItem(SAVED_PALETTES_KEY);
-    if (!savedColorPalettes) {
-        return [];
-    }
-
-    try {
-        return JSON.parse(savedColorPalettes);
-    } catch(e) {
-        return [];
-    }
-}
-
-const areColorsIdentical = (c1, c2) => c1.sort().join('-') === c2.sort().join('-');
-
-const isColorPaletteAlreadySaved = (colors, savedColorPalettes) => {
-    if (!colors) {
-        return false;
-    }
-
-    return !!savedColorPalettes.find(cp => areColorsIdentical(cp.colors, colors));
-}
-
-const saveColorPalette = (state) => {
-    const savedColorPalettes = getSavedColorPalettes();
-    if (!isColorPaletteAlreadySaved(state.colors, savedColorPalettes)) {
-        savedColorPalettes.push(state);
-        window.localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(savedColorPalettes));
-        createNotification('Color palette saved', 1500);
-    }
-}
-
-// Notifications
-const createNotification = (message, timeout = 2500) => {
-    const NOTIFICATION_CLASSNAME = 'notification';
-    const notification = document.createElement('div');
-    notification.textContent = message;
-    notification.classList.add(NOTIFICATION_CLASSNAME);
-    setTimeout(() => {
-        console.log('removing notification');
-        notification.remove();
-    }, timeout);
-
-    notificationsContainer.appendChild(notification);
-}
-
 // Saved palettes
 
 const showSavedPalettes = () => {
@@ -405,7 +298,7 @@ imageUploadInput.addEventListener('chnage', (e) => {
 saveButton.addEventListener('click', () => {
     const currentColorPalette = window.history.state;
     if (currentColorPalette && currentColorPalette.colors) {
-        saveColorPalette(currentColorPalette);
+        saveColorPalette(currentColorPalette, createNotification);
         hideSaveButton();
     }
 });
@@ -424,4 +317,4 @@ window.onpopstate = (event) => {
     }
 };
 
-initFromUrl();
+initFromUrl(loadViewMode, loadColorsMode);
