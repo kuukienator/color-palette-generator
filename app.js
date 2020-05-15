@@ -47,6 +47,9 @@ const hideSavedPalettes = () => {
 
 const UNSPLASH_COLLECTIONS = [
     '17098',
+    '649278',
+    '827743',
+    '1242150'
 ];
 
 const MAX_WIDTH = 1200;
@@ -91,7 +94,7 @@ const UNSPLASH_EXAMPLE_IMAGES = [
  * @param {string} imageUrl
  * @returns {string}
  */
-const buildOptimalImageUrl = imageUrl => imageUrl.replace(/w=\d+/, `w=${Math.min(MAX_WIDTH, window.devicePixelRatio * window.innerWidth)}`);
+const buildOptimalImageUrl = imageUrl => imageUrl.replace(/w=\d+/, `w=${Math.round(Math.min(MAX_WIDTH, window.devicePixelRatio * window.innerWidth))}`);
 
 /**
  *
@@ -274,8 +277,8 @@ const showSavedPalettesView = () => {
 }
 
 randomImageButton.addEventListener('click', () =>
-    // loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}?_t=${Date.now()}`)
-    loadImage(buildOptimalImageUrl(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)]))
+    loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}/1920x1080?_t=${Date.now()}`)
+    //loadImage(buildOptimalImageUrl(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)]))
 );
 
 urlImageButton.addEventListener('click', () => {
