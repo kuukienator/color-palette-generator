@@ -418,7 +418,8 @@
             height: 100%;
             font-size: 1.2em;
             max-width: 800px;
-            width: 90%;
+            width: 84%;
+            overflow: scroll;
         }
 
         .savedColorPalettes > .palette {
@@ -460,7 +461,7 @@
             <h1>Color Palette Generator</h1>
         </div>
         <div class="controls">
-            <label for="imageUpload" class="button">Upload</label>
+            <label for="imageUpload" class="button" style="display: none;">Upload</label>
             <input type="file" id="imageUpload" name="imageUpload" accept="image/*" style="display:none">
             <button id="randomImage" name="randomImage" class="button">Random</button>
             <button id="urlImage" name="urlImage" class="button">Url</button>
