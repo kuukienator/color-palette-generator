@@ -53,6 +53,7 @@ const UNSPLASH_COLLECTIONS = [
 ];
 
 const MAX_WIDTH = 1200;
+const TARGET_RESOLUTION = '1280x720'
 
 const UNSPLASH_EXAMPLE_IMAGES = [
     'https://images.unsplash.com/photo-1563736204193-eae6c811441b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
@@ -277,7 +278,7 @@ const showSavedPalettesView = () => {
 }
 
 randomImageButton.addEventListener('click', () =>
-    loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}/1920x1080?_t=${Date.now()}`)
+    loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}/${TARGET_RESOLUTION}?_t=${Date.now()}`)
     //loadImage(buildOptimalImageUrl(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)]))
 );
 
