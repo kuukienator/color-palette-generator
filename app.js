@@ -87,7 +87,13 @@ const UNSPLASH_EXAMPLE_IMAGES = [
     'https://images.unsplash.com/photo-1489203501925-afd02ae2d8d4?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1529304344766-6b537de190f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
     'https://images.unsplash.com/photo-1486262322291-6f4dbcd69e10?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1488462237308-ecaa28b729d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80'
+    'https://images.unsplash.com/photo-1488462237308-ecaa28b729d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1438007139926-e36a66651100?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1565645609672-e9ede1d10f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1589305667159-006d7da41f5a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1572727004231-72c211d8fb94?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1511356486915-7c257073732d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1585387478487-02dc8f5b41ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
 ];
 
 /**
@@ -278,8 +284,8 @@ const showSavedPalettesView = () => {
 }
 
 randomImageButton.addEventListener('click', () =>
-    loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}/${TARGET_RESOLUTION}?_t=${Date.now()}`)
-    //loadImage(buildOptimalImageUrl(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)]))
+    // loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}/${TARGET_RESOLUTION}?_t=${Date.now()}`)
+    loadImage(buildOptimalImageUrl(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)]))
 );
 
 urlImageButton.addEventListener('click', () => {
