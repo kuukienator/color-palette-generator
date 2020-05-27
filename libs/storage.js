@@ -10,38 +10,39 @@ const getSavedColorPalettes = () => {
 
     try {
         return JSON.parse(savedColorPalettes);
-    } catch(e) {
+    } catch (e) {
         return [];
     }
-}
+};
 
 /**
- * 
- * @param {Array<string>} c1 
- * @param {Array<string>} c2 
+ *
+ * @param {Array<string>} c1
+ * @param {Array<string>} c2
  */
-const areColorsIdentical = (c1, c2) => c1.sort().join('-') === c2.sort().join('-');
+const areColorsIdentical = (c1, c2) =>
+    c1.sort().join('-') === c2.sort().join('-');
 
 const isColorPaletteAlreadySaved = (colors, savedColorPalettes) => {
     if (!colors) {
         return false;
     }
 
-    return !!savedColorPalettes.find(cp => areColorsIdentical(cp.colors, colors));
-}
+    return !!savedColorPalettes.find((cp) =>
+        areColorsIdentical(cp.colors, colors)
+    );
+};
 
 const saveColorPalette = (state, createNotification) => {
     const savedColorPalettes = getSavedColorPalettes();
     if (!isColorPaletteAlreadySaved(state.colors, savedColorPalettes)) {
         savedColorPalettes.push(state);
-        window.localStorage.setItem(SAVED_PALETTES_KEY, JSON.stringify(savedColorPalettes));
+        window.localStorage.setItem(
+            SAVED_PALETTES_KEY,
+            JSON.stringify(savedColorPalettes)
+        );
         createNotification('Color palette saved', 1500);
     }
-}
+};
 
-
-export {
-    getSavedColorPalettes,
-    saveColorPalette,
-    isColorPaletteAlreadySaved,
-}
+export { getSavedColorPalettes, saveColorPalette, isColorPaletteAlreadySaved };

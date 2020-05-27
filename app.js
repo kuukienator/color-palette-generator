@@ -1,5 +1,9 @@
 import { createNotification } from './libs/notifications.js';
-import { getSavedColorPalettes, isColorPaletteAlreadySaved, saveColorPalette } from './libs/storage.js';
+import {
+    getSavedColorPalettes,
+    isColorPaletteAlreadySaved,
+    saveColorPalette,
+} from './libs/storage.js';
 import { initFromUrl, addToHistory } from './libs/history.js';
 
 const workers = [];
@@ -21,39 +25,43 @@ const saveButton = document.querySelector('.saveButton');
 const savedColorPalettes = document.querySelector('.savedColorPalettes');
 const savedPalettesOverlay = document.querySelector('.savedPalettesOverlay');
 const showSavedPalettesButton = document.getElementById('showSavedPalettes');
-const closedSavedPalettesButton = document.getElementById('closedSavedPalettes');
+const closedSavedPalettesButton = document.getElementById(
+    'closedSavedPalettes'
+);
+
+const CANVAS_SCALE = 0.5;
 
 const showSaveButton = () => {
     const currentState = window.history.state;
-    if (!isColorPaletteAlreadySaved(currentState.colors, getSavedColorPalettes())) {
+    if (
+        !isColorPaletteAlreadySaved(
+            currentState.colors,
+            getSavedColorPalettes()
+        )
+    ) {
         saveButton.classList.remove('slideOut');
     }
 
     // TODO:  maybe show are remove from saved button
-}
+};
 
 const hideSaveButton = () => {
     saveButton.classList.add('slideOut');
-}
+};
 
 const showSavedPalettes = () => {
     showSavedPalettesView();
     savedPalettesOverlay.classList.remove('is-hidden');
-}
+};
 
 const hideSavedPalettes = () => {
     savedPalettesOverlay.classList.add('is-hidden');
-}
+};
 
-const UNSPLASH_COLLECTIONS = [
-    '17098',
-    '649278',
-    '827743',
-    '1242150'
-];
+const UNSPLASH_COLLECTIONS = ['17098', '649278', '827743', '1242150'];
 
 const MAX_WIDTH = 1200;
-const TARGET_RESOLUTION = '1280x720'
+const TARGET_RESOLUTION = '1280x720';
 
 const UNSPLASH_EXAMPLE_IMAGES = [
     'https://images.unsplash.com/photo-1563736204193-eae6c811441b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
@@ -101,7 +109,13 @@ const UNSPLASH_EXAMPLE_IMAGES = [
  * @param {string} imageUrl
  * @returns {string}
  */
-const buildOptimalImageUrl = imageUrl => imageUrl.replace(/w=\d+/, `w=${Math.round(Math.min(MAX_WIDTH, window.devicePixelRatio * window.innerWidth))}`);
+const buildOptimalImageUrl = (imageUrl) =>
+    imageUrl.replace(
+        /w=\d+/,
+        `w=${Math.round(
+            Math.min(MAX_WIDTH, window.devicePixelRatio * window.innerWidth)
+        )}`
+    );
 
 /**
  *
@@ -115,25 +129,32 @@ const getRandomIntInclusive = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
-const createClusterFromHexColors = (hexColors) => hexColors.map(h => ({color: window.COLOR.hexToRgb(h)}));
+const createClusterFromHexColors = (hexColors) =>
+    hexColors.map((h) => ({ color: window.COLOR.hexToRgb(h) }));
 
 const appendPalettes = (clusters, palettes, options) => {
     const colors = document.createElement('div');
     colors.classList.add('palette');
 
     if (options && options.paletteOnClick) {
-        const colorsUrlQuery = clusters.map(c => window.COLOR.rgbToHex(c.color).join(''));
-        colors.addEventListener('click', e => options.paletteOnClick({colors: colorsUrlQuery }));
+        const colorsUrlQuery = clusters.map((c) =>
+            window.COLOR.rgbToHex(c.color).join('')
+        );
+        colors.addEventListener('click', (e) =>
+            options.paletteOnClick({ colors: colorsUrlQuery })
+        );
     }
 
-    clusters.forEach(cluster => {
+    clusters.forEach((cluster) => {
         const color = cluster.color;
         const hslColor = window.COLOR.rgbToHsl(color);
         const hexColor = window.COLOR.rgbToHex(color);
 
         const cd = document.createElement('div');
         if (options && options.colorOnClick) {
-            cd.addEventListener('click', e => options.colorOnClick(window.COLOR.createHEXString(hexColor)));
+            cd.addEventListener('click', (e) =>
+                options.colorOnClick(window.COLOR.createHEXString(hexColor))
+            );
         }
         cd.style.backgroundColor = window.COLOR.createRGBString(color);
         cd.style.color = window.COLOR.getTextColorFromLuminance(hslColor[2]);
@@ -150,27 +171,27 @@ const appendPalettes = (clusters, palettes, options) => {
     palettes.appendChild(colors);
 };
 
-const copyTextToClipboard = text => {
+const copyTextToClipboard = (text) => {
     if (!navigator.clipboard) {
-        createNotification('¯\_(ツ)_/¯ No fallback copy yet');
+        createNotification('¯_(ツ)_/¯ No fallback copy yet');
         return Promise.resolve();
     } else {
         return navigator.clipboard.writeText(text);
     }
-}
+};
 
-const copyColorClickHandler = color => {
+const copyColorClickHandler = (color) => {
     copyTextToClipboard(color)
         .then(() => createNotification(`Copied ${color} to clipboard`))
         .catch(() => createNotification(`Failed to copy... :(`));
-}
+};
 
 const startWorker = (imageUrl, imageData, width, filterOptions) => {
     const worker = new Worker('worker.js');
     workers.push(worker);
     worker.addEventListener(
         'message',
-        e => {
+        (e) => {
             switch (e.data.type) {
                 case 'GENERATE_COLORS_ARRAY':
                     const pixels = e.data.pixels;
@@ -179,16 +200,24 @@ const startWorker = (imageUrl, imageData, width, filterOptions) => {
                             type: 'GENERATE_CLUSTERS',
                             pixels,
                             k: 5,
-                            filterOptions
+                            filterOptions,
                         });
                     }
                     break;
                 case 'GENERATE_CLUSTERS':
+                    console.timeEnd('calculating colors');
                     const clusters = e.data.clusters;
                     loadingAnimation.classList.add('is-hidden');
                     palettes.classList.remove('is-hidden');
-                    appendPalettes(clusters, palettes, { colorOnClick: copyColorClickHandler });
-                    addToHistory(clusters.map(cl => window.COLOR.rgbToHex(cl.color).join('')), imageUrl);
+                    appendPalettes(clusters, palettes, {
+                        colorOnClick: copyColorClickHandler,
+                    });
+                    addToHistory(
+                        clusters.map((cl) =>
+                            window.COLOR.rgbToHex(cl.color).join('')
+                        ),
+                        imageUrl
+                    );
                     showSaveButton();
                     break;
             }
@@ -199,29 +228,32 @@ const startWorker = (imageUrl, imageData, width, filterOptions) => {
     worker.postMessage({
         type: 'GENERATE_COLORS_ARRAY',
         imageData,
-        width
+        width,
     });
 };
 
 const imageLoadCallback = (image, canvas, ctx) => {
-    const width = image.naturalWidth;
-    const height = image.naturalHeight;
+    console.time('calculating colors');
+    const width = image.naturalWidth * CANVAS_SCALE;
+    const height = image.naturalHeight * CANVAS_SCALE;
     canvas.width = width;
     canvas.height = height;
-    ctx.drawImage(image, 0, 0);
+    ctx.drawImage(image, 0, 0, width, height);
 
     const isVibrantMode = vibrantModeCheckbox.checked;
 
     const imageData = ctx.getImageData(0, 0, width, height);
-    const filterOptions = isVibrantMode ? {saturation: 0.25, lightness: 0.2} : {saturation: 0.15, lightness: 0.2};
-    // startWorker(imageData, width, {saturation: 0.1, lightness: 0.15});
+    console.log(width, height, imageData);
+    const filterOptions = isVibrantMode
+        ? { saturation: 0.25, lightness: 0.2 }
+        : { saturation: 0.15, lightness: 0.2 };
     startWorker(image.src, imageData, width, filterOptions);
 };
 
-const loadImage = source => {
+const loadImage = (source) => {
     hideSaveButton();
     palettes.innerHTML = '';
-    workers.forEach(w => w.terminate());
+    workers.forEach((w) => w.terminate());
 
     const image = new Image();
     image.crossOrigin = 'Anonymous';
@@ -238,32 +270,36 @@ const loadImage = source => {
 
 const loadViewMode = (source, colors) => {
     palettes.innerHTML = '';
-    workers.forEach(w => w.terminate());
+    workers.forEach((w) => w.terminate());
 
     const image = new Image();
     image.crossOrigin = 'Anonymous';
     image.src = source;
 
     image.classList.add('backgroundImage');
-    appendPalettes(createClusterFromHexColors(colors), palettes, { colorOnClick: copyColorClickHandler});
+    appendPalettes(createClusterFromHexColors(colors), palettes, {
+        colorOnClick: copyColorClickHandler,
+    });
 
     const bi = document.querySelector('.backgroundImage');
     document.body.replaceChild(image, bi);
     loadingAnimation.classList.add('is-hidden');
     palettes.classList.remove('is-hidden');
     showSaveButton();
-}
+};
 
 const loadColorsMode = (colors) => {
     palettes.innerHTML = '';
-    workers.forEach(w => w.terminate());
+    workers.forEach((w) => w.terminate());
     const bi = document.querySelector('.backgroundImage');
     bi.classList.add('is-hidden');
-    appendPalettes(createClusterFromHexColors(colors), palettes, { colorOnClick: copyColorClickHandler });
+    appendPalettes(createClusterFromHexColors(colors), palettes, {
+        colorOnClick: copyColorClickHandler,
+    });
     loadingAnimation.classList.add('is-hidden');
     palettes.classList.remove('is-hidden');
     showSaveButton();
-}
+};
 
 // Saved palettes
 
@@ -271,21 +307,34 @@ const showSavedPalettesView = () => {
     const savedPalettes = getSavedColorPalettes();
     savedColorPalettes.textContent = '';
     if (savedPalettes.length === 0) {
-        savedColorPalettes.innerHTML = 'You have not saved any palettes yet.<br/> Use the <b>+</b> button to add while browsing.';
+        savedColorPalettes.innerHTML =
+            'You have not saved any palettes yet.<br/> Use the <b>+</b> button to add while browsing.';
     } else {
-        const paletteOnClick = e => {
+        const paletteOnClick = (e) => {
             console.log(e.colors);
             loadColorsMode(e.colors);
             addToHistory(e.colors);
             hideSavedPalettes();
-        }
-        savedPalettes.forEach(sp => appendPalettes(createClusterFromHexColors(sp.colors), savedColorPalettes, { paletteOnClick }));
+        };
+        savedPalettes.forEach((sp) =>
+            appendPalettes(
+                createClusterFromHexColors(sp.colors),
+                savedColorPalettes,
+                { paletteOnClick }
+            )
+        );
     }
-}
+};
 
 randomImageButton.addEventListener('click', () =>
     // loadImage(`https://source.unsplash.com/collection/${getRandomIntInclusive(0, UNSPLASH_COLLECTIONS.length - 1)}/${TARGET_RESOLUTION}?_t=${Date.now()}`)
-    loadImage(buildOptimalImageUrl(UNSPLASH_EXAMPLE_IMAGES[getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)]))
+    loadImage(
+        buildOptimalImageUrl(
+            UNSPLASH_EXAMPLE_IMAGES[
+                getRandomIntInclusive(0, UNSPLASH_EXAMPLE_IMAGES.length - 1)
+            ]
+        )
+    )
 );
 
 urlImageButton.addEventListener('click', () => {
@@ -298,7 +347,7 @@ urlImageCancelButton.addEventListener('click', () => {
     urlImageInput.value = '';
 });
 
-urlImageForm.addEventListener('submit', e => {
+urlImageForm.addEventListener('submit', (e) => {
     e.preventDefault();
     e.stopPropagation();
     document.body.classList.toggle('showUrlInput');
@@ -309,14 +358,18 @@ urlImageForm.addEventListener('submit', e => {
     urlImageInput.value = '';
 });
 
-imageUploadInput.addEventListener('chnage', (e) => {
-    const fileList = e.target.files;
-    if (fileList.length > 0) {
-        const reader = new FileReader();
-        reader.onload = e => loadImage(e.target.result);
-        reader.readAsDataURL(fileList[0]);
-    }
-}, false);
+imageUploadInput.addEventListener(
+    'chnage',
+    (e) => {
+        const fileList = e.target.files;
+        if (fileList.length > 0) {
+            const reader = new FileReader();
+            reader.onload = (e) => loadImage(e.target.result);
+            reader.readAsDataURL(fileList[0]);
+        }
+    },
+    false
+);
 
 saveButton.addEventListener('click', () => {
     const currentColorPalette = window.history.state;

@@ -1,7 +1,7 @@
 /**
- * 
- * @param {Number} min 
- * @param {Number} max 
+ *
+ * @param {Number} min
+ * @param {Number} max
  * @returns {Number}
  */
 const getRandomIntInclusive = (min, max) => {
@@ -11,11 +11,11 @@ const getRandomIntInclusive = (min, max) => {
 };
 
 /**
- * 
+ *
  * @param {Uint8ClampedArray} dataArray
  * @returns {Array<Array<{Number}>>}
  */
-const calculateColorsArray = dataArray => {
+const calculateColorsArray = (dataArray) => {
     const pixels = [];
     const length = dataArray.length;
 
@@ -35,87 +35,92 @@ const calculateColorsArray = dataArray => {
  */
 const getColorBounds = (colorValue, bounds) => ({
     min: Math.min(colorValue, bounds.min),
-    max: Math.max(colorValue, bounds.max)
+    max: Math.max(colorValue, bounds.max),
 });
 
 /**
- * 
+ *
  * @param {Array<Array<Number>>} pixels
  * @returns {{r: {min:Number, max:Number}, g: {min:Number, max:Number}, b: {min:Number, max:Number}}}
  */
-const calculateColorRanges = pixels => pixels.reduce((acc, pixel) => {
-    acc.r = getColorBounds(pixel[0], acc.r);
-    acc.g = getColorBounds(pixel[1], acc.g);
-    acc.b = getColorBounds(pixel[2], acc.b);
+const calculateColorRanges = (pixels) =>
+    pixels.reduce(
+        (acc, pixel) => {
+            acc.r = getColorBounds(pixel[0], acc.r);
+            acc.g = getColorBounds(pixel[1], acc.g);
+            acc.b = getColorBounds(pixel[2], acc.b);
 
-    return acc;
-}, {
-    r: {
-        min: 255,
-        max: 0
-    },
-    g: {
-        min: 255,
-        max: 0
-    },
-    b: {
-        min: 255,
-        max: 0
-    }
-});
-
-/**
- * 
- * @param {Array<Number>} rgbColors
- * @returns {Array<Number>} 
- */
-const calculateAverageRGBSquared = rgbColors =>
-    rgbColors
-    .reduce(
-        (averageColor, currentColor) => {
-            for (let i = 0; i < currentColor.length; i++) {
-                averageColor[i] += Math.pow(currentColor[i], 2);
-            }
-            return averageColor;
+            return acc;
         },
-        [0, 0, 0]
-    )
-    .map(value => Math.sqrt(value / rgbColors.length));
+        {
+            r: {
+                min: 255,
+                max: 0,
+            },
+            g: {
+                min: 255,
+                max: 0,
+            },
+            b: {
+                min: 255,
+                max: 0,
+            },
+        }
+    );
 
 /**
- * 
+ *
  * @param {Array<Number>} rgbColors
- * @returns {Array<Number>} 
+ * @returns {Array<Number>}
  */
-const calculateAverageRGB = rgbColors =>
+const calculateAverageRGBSquared = (rgbColors) =>
     rgbColors
-    .reduce(
-        (averageColor, currentColor) => {
-            for (let i = 0; i < currentColor.length; i++) {
-                averageColor[i] += currentColor[i];
-            }
-            return averageColor;
-        },
-        [0, 0, 0]
-    )
-    .map(value => value / rgbColors.length);
+        .reduce(
+            (averageColor, currentColor) => {
+                for (let i = 0; i < currentColor.length; i++) {
+                    averageColor[i] += Math.pow(currentColor[i], 2);
+                }
+                return averageColor;
+            },
+            [0, 0, 0]
+        )
+        .map((value) => Math.sqrt(value / rgbColors.length));
 
 /**
- * 
- * @param {{r: {min:Number, max:Number}, g: {min:Number, max:Number}, b: {min:Number, max:Number}}} ranges 
+ *
+ * @param {Array<Number>} rgbColors
+ * @returns {Array<Number>}
  */
-const createRandomCentroid = ranges => [
+const calculateAverageRGB = (rgbColors) =>
+    rgbColors
+        .reduce(
+            (averageColor, currentColor) => {
+                for (let i = 0; i < currentColor.length; i++) {
+                    averageColor[i] += currentColor[i];
+                }
+                return averageColor;
+            },
+            [0, 0, 0]
+        )
+        .map((value) => value / rgbColors.length);
+
+/**
+ *
+ * @param {{r: {min:Number, max:Number}, g: {min:Number, max:Number}, b: {min:Number, max:Number}}} ranges
+ */
+const createRandomCentroid = (ranges) => [
     getRandomIntInclusive(ranges['r'].min, ranges['r'].max),
     getRandomIntInclusive(ranges['g'].min, ranges['g'].max),
-    getRandomIntInclusive(ranges['b'].min, ranges['b'].max)
+    getRandomIntInclusive(ranges['b'].min, ranges['b'].max),
 ];
 
 /**
- * 
+ *
  * @param {Array<Array<Number>>} pixels
- * @returns {Array<Number>} 
+ * @returns {Array<Number>}
  */
-const getRandomCentroid = pixels => pixels[getRandomIntInclusive(0, pixels.length - 1)];
+const getRandomCentroid = (pixels) =>
+    pixels[getRandomIntInclusive(0, pixels.length - 1)];
 
 const createInitialClusters = (pixels, clusterCount, ranges) => {
     const clusters = [];
@@ -131,37 +136,44 @@ const createInitialClusters = (pixels, clusterCount, ranges) => {
 };
 
 /**
- * 
- * @param {Array<Number>} a 
+ *
+ * @param {Array<Number>} a
  * @param {Array<Number>} b
- * @returns {Number} 
+ * @returns {Number}
  */
-const calulateRGBEuclideanDistance = (a, b) => Math.sqrt(
-    (2 * Math.pow(b[0] - a[0], 2)) + (4 * Math.pow(b[1] - a[1], 2)) + (3 * Math.pow(b[2] - a[2], 2))
-);
+const calulateRGBEuclideanDistance = (a, b) =>
+    Math.sqrt(
+        2 * Math.pow(b[0] - a[0], 2) +
+            4 * Math.pow(b[1] - a[1], 2) +
+            3 * Math.pow(b[2] - a[2], 2)
+    );
 
 /**
- * 
- * @param {Array<Number>} a 
+ *
+ * @param {Array<Number>} a
  * @param {Array<Number>} b
- * @returns {Number} 
+ * @returns {Number}
  */
 const calculateBetterRGBEuclideanDistance = (a, b) => {
     const rDelta = Math.pow(b[0] - a[0], 2);
     const gDelta = Math.pow(b[1] - a[1], 2);
     const bDelta = Math.pow(b[2] - a[2], 2);
-    const r = (b[0] - a[0]) / 2
-    return Math.sqrt((2 * rDelta) + (4 * gDelta) + (3 * bDelta) + ((r * (rDelta - bDelta)) / 256));
+    const r = (b[0] - a[0]) / 2;
+    return Math.sqrt(
+        2 * rDelta + 4 * gDelta + 3 * bDelta + (r * (rDelta - bDelta)) / 256
+    );
 };
 
-const updateClusters = (clusters, ranges, pixels) => clusters.map(cluster => ({
-    points: [],
-    _previousCentroid: cluster.centroid,
-    percentage: Math.round((cluster.points.length / pixels.length) * 100),
-    centroid: cluster.points.length > 0 ?
-        calculateAverageRGB(cluster.points) : createRandomCentroid(ranges)
-}));
-
+const updateClusters = (clusters, ranges, pixels) =>
+    clusters.map((cluster) => ({
+        points: [],
+        _previousCentroid: cluster.centroid,
+        percentage: Math.round((cluster.points.length / pixels.length) * 100),
+        centroid:
+            cluster.points.length > 0
+                ? calculateAverageRGB(cluster.points)
+                : createRandomCentroid(ranges),
+    }));
 
 const calculateClusters = (clusters, pixels) => {
     pixels.forEach((pixel, i) => {
@@ -169,7 +181,10 @@ const calculateClusters = (clusters, pixels) => {
         let closestCentroidIndex = 0;
 
         clusters.forEach((cluster, i) => {
-            const distance = calculateBetterRGBEuclideanDistance(cluster.centroid, pixel);
+            const distance = calculateBetterRGBEuclideanDistance(
+                cluster.centroid,
+                pixel
+            );
 
             if (distance < minDistance) {
                 minDistance = distance;
@@ -186,7 +201,10 @@ const filterPixels = (pixels, filterOptions) => {
     const filteredPixels = [];
     for (let i = 0; i < pixels.length; i++) {
         const [hue, saturation, lightness] = COLOR.rgbToHsl(pixels[i]);
-        if (saturation > filterOptions.saturation && lightness > filterOptions.lightness) {
+        if (
+            saturation > filterOptions.saturation &&
+            lightness > filterOptions.lightness
+        ) {
             filteredPixels.push(pixels[i]);
         }
     }
@@ -207,12 +225,20 @@ const calculateKMeansClustering = (rawPixels, k, filterOptions) => {
         clusters = calculateClusters(clusters, pixels);
         clusters = updateClusters(clusters, ranges, pixels);
     } while (
-        clusters.some(c => calculateBetterRGBEuclideanDistance(c.centroid, c._previousCentroid) > DISTANCE_DELTA) &&
+        clusters.some(
+            (c) =>
+                calculateBetterRGBEuclideanDistance(
+                    c.centroid,
+                    c._previousCentroid
+                ) > DISTANCE_DELTA
+        ) &&
         iterations < MAX_ITERATIONS
     );
 
-    return clusters.map(c => ({
-        color: c.centroid.map(v => Math.ceil(v)),
-        percentage: c.percentage
-    })).sort((a, b) => b.percentage - a.percentage);
+    return clusters
+        .map((c) => ({
+            color: c.centroid.map((v) => Math.ceil(v)),
+            percentage: c.percentage,
+        }))
+        .sort((a, b) => b.percentage - a.percentage);
 };

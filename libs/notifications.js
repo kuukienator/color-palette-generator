@@ -1,12 +1,14 @@
 // Notifications
 
 const NOTIFICATION_CLASSNAME = 'notification';
-const notificationsContainer = document.querySelector('.notificationsContainer');
+const notificationsContainer = document.querySelector(
+    '.notificationsContainer'
+);
 
 /**
- * 
- * @param {string} message 
- * @param {number} timeout 
+ *
+ * @param {string} message
+ * @param {number} timeout
  */
 const createNotification = (message, timeout = 2500) => {
     const notification = document.createElement('div');
@@ -18,8 +20,6 @@ const createNotification = (message, timeout = 2500) => {
     }, timeout);
 
     notificationsContainer.appendChild(notification);
-}
+};
 
-export {
-    createNotification,
-}
+export { createNotification };

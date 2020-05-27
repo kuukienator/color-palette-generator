@@ -1,18 +1,24 @@
 const COLOR = (() => {
-    const getTextColorFromLuminance = luminance => (luminance > 0.5 ? '#000' : '#fff');
-    const intToPaddedHex = n => {
+    const getTextColorFromLuminance = (luminance) =>
+        luminance > 0.5 ? '#000' : '#fff';
+    const intToPaddedHex = (n) => {
         const hex = n.toString(16);
         return hex.length == 1 ? '0' + hex : hex;
     };
 
-    const createHEXString = color => `#${color.join('')}`;
-    const createRGBString = color => `rgb(${color.join(', ')})`;
+    const createHEXString = (color) => `#${color.join('')}`;
+    const createRGBString = (color) => `rgb(${color.join(', ')})`;
     const createHSLString = ([hue, saturation, luminance]) =>
-        `hsl(${Math.round(hue)}, ${Math.round(saturation * 100)}%, ${Math.round(luminance * 100)}%)`;
+        `hsl(${Math.round(hue)}, ${Math.round(saturation * 100)}%, ${Math.round(
+            luminance * 100
+        )}%)`;
 
-    const hexToRgb = color => [color.substr(0,2), color.substr(2,2), color.substr(4,2)].map(e => parseInt(e, 16));
-    
-    const rgbToHex = color => color.map(c => intToPaddedHex(c));
+    const hexToRgb = (color) =>
+        [color.substr(0, 2), color.substr(2, 2), color.substr(4, 2)].map((e) =>
+            parseInt(e, 16)
+        );
+
+    const rgbToHex = (color) => color.map((c) => intToPaddedHex(c));
 
     const calculateHue = (colorRatios, indexOfMax, max, min) => {
         let hue = 0;
@@ -36,16 +42,25 @@ const COLOR = (() => {
      * @param color
      * @returns {[number, number, number]}
      */
-    const rgbToHsl = color => {
-        const colorRatios = color.map(c => c / 255);
+    const rgbToHsl = (color) => {
+        const colorRatios = color.map((c) => c / 255);
         const min = Math.min(...colorRatios);
         const max = Math.max(...colorRatios);
 
         const luminance = (min + max) / 2;
         const saturation =
-            min === max ? 0 : luminance < 0.5 ? (max - min) / (max + min) : (max - min) / (2.0 - max - min);
+            min === max
+                ? 0
+                : luminance < 0.5
+                ? (max - min) / (max + min)
+                : (max - min) / (2.0 - max - min);
 
-        const hue = calculateHue(colorRatios, colorRatios.indexOf(max), max, min);
+        const hue = calculateHue(
+            colorRatios,
+            colorRatios.indexOf(max),
+            max,
+            min
+        );
 
         return [hue, saturation, luminance];
     };

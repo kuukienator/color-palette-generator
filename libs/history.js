@@ -1,7 +1,7 @@
 /**
- * 
- * @param {Array<string>} colors 
- * @param {string} imageUrl 
+ *
+ * @param {Array<string>} colors
+ * @param {string} imageUrl
  */
 const createUrlQueryString = (colors, imageUrl) => {
     const queries = [];
@@ -9,7 +9,7 @@ const createUrlQueryString = (colors, imageUrl) => {
         queries.push(`colors=${colors.join('-')}`);
     }
 
-    if(imageUrl) {
+    if (imageUrl) {
         queries.push(`imageUrl=${encodeURIComponent(imageUrl)}`);
     }
 
@@ -17,9 +17,9 @@ const createUrlQueryString = (colors, imageUrl) => {
 };
 
 /**
- * 
- * @param {Array<string>} colors 
- * @param {string} imageUrl 
+ *
+ * @param {Array<string>} colors
+ * @param {string} imageUrl
  */
 const addToHistory = (colors, imageUrl) => {
     const state = {};
@@ -27,16 +27,16 @@ const addToHistory = (colors, imageUrl) => {
         state.colors = colors;
     }
 
-    if(imageUrl) {
+    if (imageUrl) {
         state.imageUrl = imageUrl;
     }
     window.history.pushState(state, '', createUrlQueryString(colors, imageUrl));
-}
+};
 
 /**
- * 
- * @param {Array<string>} colors 
- * @param {string} imageUrl 
+ *
+ * @param {Array<string>} colors
+ * @param {string} imageUrl
  */
 const updateHistory = (colors, imageUrl) => {
     const state = {};
@@ -44,12 +44,15 @@ const updateHistory = (colors, imageUrl) => {
         state.colors = colors;
     }
 
-    if(imageUrl) {
+    if (imageUrl) {
         state.imageUrl = imageUrl;
     }
-    window.history.replaceState(state, '', createUrlQueryString(colors, imageUrl));
-}
-
+    window.history.replaceState(
+        state,
+        '',
+        createUrlQueryString(colors, imageUrl)
+    );
+};
 
 const getUrlParameters = () => {
     const searchList = window.location.search.substr(1).split('&');
@@ -59,16 +62,16 @@ const getUrlParameters = () => {
         e[splitEntry[0]] = splitEntry[1];
         return Object.assign({}, acc, e);
     }, {});
-}
+};
 
 /**
- * 
- * @param {function} loadViewMode 
- * @param {function} loadColorsMode 
+ *
+ * @param {function} loadViewMode
+ * @param {function} loadColorsMode
  */
 const initFromUrl = (loadViewMode, loadColorsMode) => {
     const parameters = getUrlParameters();
-    if(parameters.colors && parameters.imageUrl) {
+    if (parameters.colors && parameters.imageUrl) {
         const colors = parameters.colors.split('-');
         const imageUrl = decodeURIComponent(parameters.imageUrl);
         updateHistory(colors, imageUrl);
@@ -78,10 +81,6 @@ const initFromUrl = (loadViewMode, loadColorsMode) => {
         updateHistory(colors);
         loadColorsMode(colors);
     }
-}
+};
 
-export {
-    initFromUrl,
-    addToHistory,
-    updateHistory,
-}
+export { initFromUrl, addToHistory, updateHistory };
