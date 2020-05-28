@@ -472,6 +472,29 @@
         .is-hidden {
             display: none;
         }
+
+        .shareLinkRow {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1em;
+        }
+
+        .shareLink {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background:hsl(16, 100%, 50%);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.25em;
+        }
+
+        .shareLink img {
+            width: 2em;
+        }
     </style>
 </head>
 
@@ -519,11 +542,17 @@
         <button class="floatingButton hideInformationButton overlayCloseButton button">X</button>
     </div>
     <div class="shareOverlay">
-        <h2>Share</h2>
-        <a class="copyButton">COPY</a>
-        <a class="downloadJson">JSON</a>
-        <a class="downloadCss">CSS</a>
-        <a class="downloadImage">Image</a>
+        <h2>Share the palette</h2>
+        <div class="shareLinkContainer">
+            <div class="shareLinkRow">
+                <a class="shareLink copyButton"><img src="icons/file_copy-white-18dp.svg" alt="copy"><span>COPY</span></a>
+                <a class="shareLink downloadImage"><img src="icons/insert_photo-white-18dp.svg" alt="image"><span>IMAGE</span></a>
+            </div>
+            <div class="shareLinkRow">
+                <a class="shareLink downloadCss"><img src="icons/style-white-18dp.svg" alt="style"><span>CSS</span></a>
+                <a class="shareLink downloadJson"><img src="icons/code-white-18dp.svg" alt="json"><span>JSON</span></a>
+            </div>
+        </div>
         <button class="floatingButton hideShareButton overlayCloseButton button">X</button>
     </div>
     <div class="imageUrlOverlay">
