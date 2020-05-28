@@ -270,8 +270,8 @@ const startWorker = (imageUrl, imageData, width, filterOptions) => {
 
 const imageLoadCallback = (image, canvas, ctx) => {
     console.time('calculating colors');
-    const width = image.naturalWidth * CANVAS_SCALE;
-    const height = image.naturalHeight * CANVAS_SCALE;
+    const width = Math.floor(image.naturalWidth * CANVAS_SCALE);
+    const height = Math.floor(image.naturalHeight * CANVAS_SCALE);
     canvas.width = width;
     canvas.height = height;
     ctx.drawImage(image, 0, 0, width, height);
