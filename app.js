@@ -49,8 +49,12 @@ const showSideBarButtons = () => {
     // TODO:  maybe show are remove from saved button
 };
 
-const hideSideBarButtons = () => {
+const hideSaveButton = () => {
     saveButton.classList.add('slideOut');
+};
+
+const hideSideBarButtons = () => {
+    hideSaveButton();
     shareButton.classList.add('slideOut');
 };
 
@@ -417,7 +421,7 @@ saveButton.addEventListener('click', () => {
     const currentColorPalette = window.history.state;
     if (currentColorPalette && currentColorPalette.colors) {
         saveColorPalette(currentColorPalette, createNotification);
-        hideSideBarButtons();
+        hideSaveButton();
     }
 });
 
@@ -444,5 +448,5 @@ om.registerOverlay({
     activeClass: 'showShare',
 });
 
-initSharing();
+initSharing(om.closeOverlays);
 initFromUrl(loadViewMode, loadColorsMode);

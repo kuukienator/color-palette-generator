@@ -1,11 +1,13 @@
 const OverlayManager = (overlaySelector) => {
-    const overlayContainer = document.querySelector(overlaySelector);
-    const overlays = [];
-    overlayContainer.addEventListener('click', () => {
+    const closeOverlays = () => {
         overlays.forEach((o) => {
             document.body.classList.remove(o.activeClass);
         });
-    });
+    };
+
+    const overlayContainer = document.querySelector(overlaySelector);
+    const overlays = [];
+    overlayContainer.addEventListener('click', () => closeOverlays());
 
     /**
      *
@@ -29,6 +31,7 @@ const OverlayManager = (overlaySelector) => {
 
     return {
         registerOverlay: registerOverlay,
+        closeOverlays: closeOverlays,
     };
 };
 

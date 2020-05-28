@@ -104,7 +104,14 @@ const copyTextToClipboard = (text) => {
     }
 };
 
-const initSharing = () => {
+const initSharing = (closeHandler) => {
+    [
+        downloadJsonLink,
+        downloadCssLink,
+        downloadImageLink,
+        copyLinkButton,
+    ].forEach((e) => e.addEventListener('click', closeHandler));
+
     copyLinkButton.addEventListener('click', () => {
         const href = copyLinkButton.dataset.link;
         copyTextToClipboard(href)
