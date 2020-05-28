@@ -134,12 +134,18 @@
             transition: transform 300ms;
         }
 
+        .shareButton {
+            right: 0;
+            bottom: 190px;
+            transition: transform 300ms;
+        }
+
         .slideOut {           
             transform: translateX(50px);
         }
 
 
-        .hideInformationButton {
+        .hideInformationButton, .hideShareButton {
             top: -25px;
             position: absolute;
             left: 110px;
@@ -214,7 +220,11 @@
             visibility: visible;
         }
 
-        .informationOverlay {
+        .showShare .overlay {
+            visibility: visible;
+        }
+
+        .informationOverlay, .shareOverlay {
             position: absolute;
             background: white;
             width: 240px;
@@ -225,6 +235,10 @@
         }
 
         .showInformation .informationOverlay {
+            display: block;
+        }
+
+        .showShare .shareOverlay {
             display: block;
         }
 
@@ -480,6 +494,7 @@
         <div class="cube"></div>
     </div>
     <div class="informationButtonContainer">
+        <button class="shareButton floatingButton button slideOut">s</button>
         <button class="showInformationButton floatingButton button">i</button>
         <button class="saveButton floatingButton button slideOut">+</button>
     </div>
@@ -496,6 +511,14 @@
         <input type="checkbox" name="vibrantMode" id="vibrantMode">
         <label for="vibrantMode">Give me Vibrant colors</label>
         <button class="floatingButton hideInformationButton overlayCloseButton button">X</button>
+    </div>
+    <div class="shareOverlay">
+        <h2>Share</h2>
+        <a class="copyButton">COPY</a>
+        <a class="downloadJson">JSON</a>
+        <a class="downloadCss">CSS</a>
+        <a class="downloadImage">Image</a>
+        <button class="floatingButton hideShareButton overlayCloseButton button">X</button>
     </div>
     <div class="imageUrlOverlay">
         <form id="urlImageForm">
@@ -521,23 +544,6 @@
     </div>
     <script src="libs/color.js"></script>
     <script type="module" src="app.js"></script>
-    <script>
-        const showInformationButton = document.querySelector('.showInformationButton');
-        const hideInformationButton = document.querySelector('.hideInformationButton');
-        const overlay = document.querySelector('.overlay');
-
-        const eventHandler = event => {
-            event.stopPropagation();
-            document.body.classList.toggle('showInformation');
-        };
-
-        showInformationButton.addEventListener('click', eventHandler);
-        hideInformationButton.addEventListener('click', eventHandler);
-        overlay.addEventListener('click', () => {
-            document.body.classList.remove('showUrlInput');
-            document.body.classList.remove('showInformation');
-        });
-    </script>
 </body>
 
 </html>

@@ -5,6 +5,8 @@ import {
     saveColorPalette,
 } from './libs/storage.js';
 import { initFromUrl, addToHistory } from './libs/history.js';
+import { updateShareOverlay, initSharing } from './libs/share.js';
+import OverlayManager from './libs/overlay-manager.js';
 
 const workers = [];
 const palettes = document.querySelector('.palettes');
@@ -21,6 +23,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 const saveButton = document.querySelector('.saveButton');
+const shareButton = document.querySelector('.shareButton');
 
 const savedColorPalettes = document.querySelector('.savedColorPalettes');
 const savedPalettesOverlay = document.querySelector('.savedPalettesOverlay');
@@ -31,7 +34,7 @@ const closedSavedPalettesButton = document.getElementById(
 
 const CANVAS_SCALE = 0.5;
 
-const showSaveButton = () => {
+const showSideBarButtons = () => {
     const currentState = window.history.state;
     if (
         !isColorPaletteAlreadySaved(
@@ -41,12 +44,14 @@ const showSaveButton = () => {
     ) {
         saveButton.classList.remove('slideOut');
     }
+    shareButton.classList.remove('slideOut');
 
     // TODO:  maybe show are remove from saved button
 };
 
-const hideSaveButton = () => {
+const hideSideBarButtons = () => {
     saveButton.classList.add('slideOut');
+    shareButton.classList.add('slideOut');
 };
 
 const showSavedPalettes = () => {
@@ -132,39 +137,62 @@ const getRandomIntInclusive = (min, max) => {
 const createClusterFromHexColors = (hexColors) =>
     hexColors.map((h) => ({ color: window.COLOR.hexToRgb(h) }));
 
+const transformClusterColorFormats = (clusters) => {
+    const transfomedClusters = clusters.map((cluster) => {
+        const rgb = cluster.color;
+        const hsl = window.COLOR.rgbToHsl(rgb);
+        const hex = window.COLOR.rgbToHex(rgb);
+        const rgbString = window.COLOR.createRGBString(rgb);
+        const hexString = window.COLOR.createHEXString(hex);
+        const hslString = window.COLOR.createHSLString(hsl);
+        const textColor = window.COLOR.getTextColorFromLuminance(hsl[2]);
+
+        return {
+            rgb,
+            hsl,
+            hex,
+            rgbString,
+            hexString,
+            hslString,
+            textColor,
+        };
+    });
+
+    return {
+        clusters: transfomedClusters,
+        name: transfomedClusters.map((c) => c.hex.join('')).join('-'),
+    };
+};
+
 const appendPalettes = (clusters, palettes, options) => {
+    const transformedData = transformClusterColorFormats(clusters);
     const colors = document.createElement('div');
     colors.classList.add('palette');
 
     if (options && options.paletteOnClick) {
-        const colorsUrlQuery = clusters.map((c) =>
-            window.COLOR.rgbToHex(c.color).join('')
+        const colorsUrlQuery = transformedData.clusters.map((c) =>
+            c.hex.join('')
         );
         colors.addEventListener('click', (e) =>
             options.paletteOnClick({ colors: colorsUrlQuery })
         );
     }
 
-    clusters.forEach((cluster) => {
-        const color = cluster.color;
-        const hslColor = window.COLOR.rgbToHsl(color);
-        const hexColor = window.COLOR.rgbToHex(color);
-
+    transformedData.clusters.forEach((cluster) => {
         const cd = document.createElement('div');
         if (options && options.colorOnClick) {
             cd.addEventListener('click', (e) =>
-                options.colorOnClick(window.COLOR.createHEXString(hexColor))
+                options.colorOnClick(cluster.hexString)
             );
         }
-        cd.style.backgroundColor = window.COLOR.createRGBString(color);
-        cd.style.color = window.COLOR.getTextColorFromLuminance(hslColor[2]);
-        // cd.style.height = cluster.percentage + '%';
+        cd.style.backgroundColor = cluster.rgbString;
+        cd.style.color = cluster.textColor;
 
-        cd.setAttribute('data-rgb', window.COLOR.createRGBString(color));
-        cd.setAttribute('data-hex', window.COLOR.createHEXString(hexColor));
-        cd.setAttribute('data-hsl', window.COLOR.createHSLString(hslColor));
+        cd.setAttribute('data-rgb', cluster.rgbString);
+        cd.setAttribute('data-hex', cluster.hexString);
+        cd.setAttribute('data-hsl', cluster.hslColor);
 
-        cd.innerHTML = `<span>${window.COLOR.createHEXString(hexColor)}</span>`;
+        cd.innerHTML = `<span>${cluster.hexString}</span>`;
         colors.appendChild(cd);
     });
 
@@ -218,7 +246,11 @@ const startWorker = (imageUrl, imageData, width, filterOptions) => {
                         ),
                         imageUrl
                     );
-                    showSaveButton();
+                    updateShareOverlay(
+                        window.location.href,
+                        transformClusterColorFormats(clusters)
+                    );
+                    showSideBarButtons();
                     break;
             }
         },
@@ -251,7 +283,7 @@ const imageLoadCallback = (image, canvas, ctx) => {
 };
 
 const loadImage = (source) => {
-    hideSaveButton();
+    hideSideBarButtons();
     palettes.innerHTML = '';
     workers.forEach((w) => w.terminate());
 
@@ -277,7 +309,12 @@ const loadViewMode = (source, colors) => {
     image.src = source;
 
     image.classList.add('backgroundImage');
-    appendPalettes(createClusterFromHexColors(colors), palettes, {
+    const clusters = createClusterFromHexColors(colors);
+    updateShareOverlay(
+        window.location.href,
+        transformClusterColorFormats(clusters)
+    );
+    appendPalettes(clusters, palettes, {
         colorOnClick: copyColorClickHandler,
     });
 
@@ -285,7 +322,7 @@ const loadViewMode = (source, colors) => {
     document.body.replaceChild(image, bi);
     loadingAnimation.classList.add('is-hidden');
     palettes.classList.remove('is-hidden');
-    showSaveButton();
+    showSideBarButtons();
 };
 
 const loadColorsMode = (colors) => {
@@ -293,12 +330,17 @@ const loadColorsMode = (colors) => {
     workers.forEach((w) => w.terminate());
     const bi = document.querySelector('.backgroundImage');
     bi.classList.add('is-hidden');
-    appendPalettes(createClusterFromHexColors(colors), palettes, {
+    const clusters = createClusterFromHexColors(colors);
+    updateShareOverlay(
+        window.location.href,
+        transformClusterColorFormats(clusters)
+    );
+    appendPalettes(clusters, palettes, {
         colorOnClick: copyColorClickHandler,
     });
     loadingAnimation.classList.add('is-hidden');
     palettes.classList.remove('is-hidden');
-    showSaveButton();
+    showSideBarButtons();
 };
 
 // Saved palettes
@@ -359,7 +401,7 @@ urlImageForm.addEventListener('submit', (e) => {
 });
 
 imageUploadInput.addEventListener(
-    'chnage',
+    'change',
     (e) => {
         const fileList = e.target.files;
         if (fileList.length > 0) {
@@ -375,7 +417,7 @@ saveButton.addEventListener('click', () => {
     const currentColorPalette = window.history.state;
     if (currentColorPalette && currentColorPalette.colors) {
         saveColorPalette(currentColorPalette, createNotification);
-        hideSaveButton();
+        hideSideBarButtons();
     }
 });
 
@@ -390,4 +432,17 @@ window.onpopstate = (event) => {
     }
 };
 
+const om = OverlayManager('.overlay');
+om.registerOverlay({
+    showSelector: '.showInformationButton',
+    hideSelector: '.hideInformationButton',
+    activeClass: 'showInformation',
+});
+om.registerOverlay({
+    showSelector: '.shareButton',
+    hideSelector: '.hideShareButton',
+    activeClass: 'showShare',
+});
+
+initSharing();
 initFromUrl(loadViewMode, loadColorsMode);

@@ -9,9 +9,9 @@ const createUrlQueryString = (colors, imageUrl) => {
         queries.push(`colors=${colors.join('-')}`);
     }
 
-    if (imageUrl) {
-        queries.push(`imageUrl=${encodeURIComponent(imageUrl)}`);
-    }
+    // if (imageUrl) {
+    //     queries.push(`imageUrl=${encodeURIComponent(imageUrl)}`);
+    // }
 
     return `?${queries.join('&')}`;
 };
