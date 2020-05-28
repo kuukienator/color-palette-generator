@@ -69,8 +69,8 @@ const formatCss = (clusters) => {
  * @param {Array<{rgb,hsl,hex,rgbString,hexString,hslString,textColor}>} clusters
  */
 const formatImage = (clusters) => {
-    const w = 400;
-    const h = 600;
+    const w = 600;
+    const h = 800;
     const canvas = document.createElement('canvas');
     canvas.width = w;
     canvas.height = h;
@@ -84,7 +84,8 @@ const formatImage = (clusters) => {
         context.fillRect(0, i * rowHeight, w, rowHeight);
         context.fillStyle = c.textColor;
         context.textAlign = 'center';
-        context.font = '35px sans-serif';
+        context.textBaseline = 'middle';
+        context.font = '38px monospace';
         context.fillText(
             c.hexString.toUpperCase(),
             w / 2,

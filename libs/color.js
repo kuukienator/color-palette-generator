@@ -1,6 +1,6 @@
 const COLOR = (() => {
     const getTextColorFromLuminance = (luminance) =>
-        luminance > 0.5 ? '#000' : '#fff';
+        luminance > 0.6 ? '#000' : '#fff';
     const intToPaddedHex = (n) => {
         const hex = n.toString(16);
         return hex.length == 1 ? '0' + hex : hex;
